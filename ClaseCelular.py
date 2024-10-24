@@ -1,5 +1,6 @@
 from ClaseTorre import Torre
 from ClaseAplicacion import *
+from ClaseAplicacion import Telefono, Contactos
 
 class Celular:
     
@@ -32,9 +33,13 @@ class Celular:
         self.numerosUso.add(numero)
         self.apagado = True
         self.bloqueado = True
+        #la funcion de red movil es permitir realizar una llamada. Asumimos que se activa desde el telefono ya que no sabemos como saber si el telefono en un determinado momento tiene senal o no.
         self.redMovil=False
         self.internet=False
-        self.aplicaciones={'telefono':Telefono(self.numero)}
+        self.aplicaciones={'Contactos':Contactos(),'Telefono':Telefono(self.numero)}
+        #linkear contactos con telefono y sms
+        self.aplicaciones['Telefono'].contactos=self.aplicaciones['Contactos'].contactos
+        #self.aplicaciones['SMS'].contactos=self.aplicaciones['contactos'].contactos
     
     #prender el telefono si esta apagado    
     def prender(self):
@@ -123,6 +128,9 @@ class Celular:
     def __str__(self):
         return f'El celular de {self.nombre} modelo {self.modelo} tiene numero de celular {self.numero}'
 
+    #METODO SINCRONIZACION
+    
+#DUDAS LEANDRO: TORRE
 
 #main
 torre=Torre()
@@ -155,8 +163,17 @@ celu2.activarRedMovil()
 torre.agregarTelefono(celu)
 torre.agregarTelefono(celu2)
 
-celu2.aplicaciones['telefono'].agregarContacto('isidro',1156789023)
-celu.aplicaciones['telefono'].llamar(1167671659,torre)
+celu2.aplicaciones['Contactos'].agregarContacto('isidro',1156789023)
+celu.aplicaciones['Telefono'].llamar(1167671659,torre)
+a=input('hola')
+celu.aplicaciones['Telefono'].cortarLlamada(torre)
+print(celu.aplicaciones['Telefono'].registroDeLlamadas)
+print('')
+print(celu2.aplicaciones['Telefono'].registroDeLlamadas)
+print('')
+print(torre.registroDeLlamadas)
+
+
 
 
 
