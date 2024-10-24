@@ -48,9 +48,9 @@ class Telefono(Aplicacion):
     #llamar por teclado       
     def llamar(self,numero,torre):
         if isinstance(torre,Torre): #pregunta a la torre si está disponible. si esta prendido y no está en otra llamada
-            if torre.verificarEstado(self.nombre,numero):
+            if torre.verificarEstado(self.nombre,self.miNumero) and torre.verificarEstado(self.nombre,numero): #verifico ambos numeros
                 self.enLlamada=numero
-                torre.telefonosRegistrados[numero].recibirLlamada(self.miNumero, torre)
+                torre.telefonosRegistrados[numero].aplicaciones['telefono'].recibirLlamada(self.miNumero, torre)
                 
     #recibir llamada
     def recibirLlamada(self,numero,torre):

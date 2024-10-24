@@ -27,9 +27,9 @@ class Torre:
                     print('Celular apagado')
                     return False
                 elif not self.telefonosRegistrados[numeroDeDestino].redMovil:
-                    print('Crlular sin red movil')
+                    print('Celular sin red movil')
                     return False
-                elif self.telefonosRegistrados[numeroDeDestino].enLlamada:
+                elif self.telefonosRegistrados[numeroDeDestino].aplicaciones['telefono'].enLlamada:
                     print('Celular ocupado')
                     return False
                 else:

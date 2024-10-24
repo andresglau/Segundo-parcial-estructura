@@ -1,3 +1,6 @@
+from ClaseTorre import Torre
+from ClaseAplicacion import *
+
 class Celular:
     
     idUnicos=set()
@@ -16,7 +19,7 @@ class Celular:
             
         #instanciar
         if self.idUnicos:
-            self.id=max(self.ids)+1
+            self.id=max(self.idUnicos)+1
         else:
             self.id=1000
         self.idUnicos.add(self.id)
@@ -31,6 +34,7 @@ class Celular:
         self.bloqueado = True
         self.redMovil=False
         self.internet=False
+        self.aplicaciones={'telefono':Telefono(self.numero)}
     
     #prender el telefono si esta apagado    
     def prender(self):
@@ -75,8 +79,8 @@ class Celular:
     #activar red movil    
     def activarRedMovil(self):
         if not self.apagado:
-            if not self.redmovil:
-                self.redmovil = True
+            if not self.redMovil:
+                self.redMovil = True
                 print('Se activo la red movil')
             else:
                 raise ValueError('La red movil ya esta activada')
@@ -86,8 +90,8 @@ class Celular:
     #desactivar red movil
     def desactivarRedMovil(self):
         if not self.apagado:
-            if self.redmovil:
-                self.redmovil = False
+            if self.redMovil:
+                self.redMovil = False
                 print('Se desactivo la red movil')
             else:
                 raise ValueError('La red movil ya esta desactivada')
@@ -121,6 +125,7 @@ class Celular:
 
 
 #main
+torre=Torre()
 celu = Celular('Isidro', 'iphone 15', 'iOS 7.1', 150, 64, 1156789023)
 try:
     celu.desbloquear()
@@ -139,15 +144,32 @@ except ValueError as e:
     
 celu.prender()
 celu.desbloquear()
-celu.apagar()
+celu.activarInternet()
+celu.activarRedMovil()
+
+celu2 = Celular('Andres', 'iphone 15', 'iOS 7.1', 150, 64, 1167671659)
+celu2.prender()
+celu2.activarInternet()
+celu2.activarRedMovil()
+
+torre.agregarTelefono(celu)
+torre.agregarTelefono(celu2)
+
+celu2.aplicaciones['telefono'].agregarContacto('isidro',1156789023)
+celu.aplicaciones['telefono'].llamar(1167671659,torre)
 
 
-alicaciones={'Telefono': 'Telefono(self.numero)'}
-celu.abrirAplicacion('Telefono')
-#self.appActiva = Telefono()
-celu.salirAplicacion()      #self.appActiva = None  
-#self.appActiva = AppStore()  
-#self.appActiva = 
 
-#self.telefono=Telefono(self.numero)
+
+
+
+
+# alicaciones={'Telefono': 'Telefono(self.numero)'}
+# celu.abrirAplicacion('Telefono')
+# #self.appActiva = Telefono()
+# celu.salirAplicacion()      #self.appActiva = None  
+# #self.appActiva = AppStore()  
+# #self.appActiva = 
+
+# #self.telefono=Telefono(self.numero)
 
