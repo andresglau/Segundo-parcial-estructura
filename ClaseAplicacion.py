@@ -9,8 +9,21 @@ class Aplicacion:
 
 class AplicacionComunicacion(Aplicacion):       #ACA SE INCLUYE A TELEFONO, CONTACTOS (hay que ver SMS pero me parece que no)
     def __init__(self):
-        super().__init__()
         self.contactos = {}
+    def verListaContactos(self):
+        for nombre in list(sorted(self.contactos)):
+            print(self.contactos[nombre])
+            
+    def verContactosEnParticular(self, subcadena):
+        contactosAMostrar=[]
+        for nombreAgendado in self.contactos:
+            if subcadena in nombreAgendado:
+                contactosAMostrar.append(self.contactos[subcadena])
+        if contactosAMostrar:
+            for contacto in list(sorted(contactosAMostrar)):
+                print(contacto)
+        else:
+            print('No hay contactos que contengan esa cadena')
 
 class Contactos(AplicacionComunicacion):
     nombre = 'Contactos'
@@ -52,28 +65,33 @@ class Contactos(AplicacionComunicacion):
             self.contactos.pop(nombre)
             print(nombre,'eliminado')
 
-    #DEF VER CONTACTOS
-    # def busco_contactos(self, nombre, numTelefono = None):
-    #     if nombre and numTelefono:
-    #         return list(filter(lambda x: (nombre, numTelefono) in x, self.contactos))
-    #     return list(filter(lambda x: (nombre, None) in x, self.contactos))
 
-class Telefono(AplicacionComunicacion):             #CREAR CLASE LLAMAD
+class Telefono(AplicacionComunicacion):
     nombre='Telefono'
     icono=None
     
     def __init__(self,numero):
         super().__init__()
         self.miNumero = numero
-        self.registroDeLlamadas = deque() #cola. ordenada de anterior a reciente
-        self.enLlamada = False #y se cambia cuando esta en llamada
+        self.registroDeLlamadas = deque() #cola. ordenada de anterior a reciente. append, popleft
+        self.enLlamada = False #y se cambia cuando esta en llamada a la Llamada correspondiente
     
     #llamar por teclado       
-    def llamar(self,numero,torre):
+    def llamarPorTeclado(self,numero,torre):
         if isinstance(torre,Torre): #pregunta a la torre si está disponible. si esta prendido y no está en otra llamada
             if torre.verificarEstado(self.nombre,self.miNumero) and torre.verificarEstado(self.nombre,numero): #verifico ambos numeros
                 self.enLlamada = Llamada(self.miNumero, numero)
                 torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada, torre)
+
+    #llamar a un contacto
+    def llamarContacto(self, nombre, torre):
+        if nombre not in self.contactos:
+            raise ValueError('Ese nombre no esta en tus contactos')
+        else:
+            if isinstance(torre,Torre):
+                if torre.verificarEstado(self.nombre,self.miNumero) and torre.verificarEstado(self.nombre, self.contactos[nombre].numTelefono):
+                    self.enLlamada = Llamada(self.miNumero, self.contactos[nombre].numTelefono)
+                    torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada, torre)
 
     #recibir llamada
     def recibirLlamada(self,llamada: Llamada,torre):       
@@ -114,11 +132,3 @@ class Telefono(AplicacionComunicacion):             #CREAR CLASE LLAMAD
     def recibirCorte(self,llamada: Llamada):
         self.enLlamada=False
         self.registrarLlamadaTelefono(llamada)
-
-
-
-
-        
-
-
-

@@ -35,8 +35,8 @@ class Celular:
         self.bloqueado = True
         #la funcion de red movil es permitir realizar una llamada. Asumimos que se activa desde el telefono ya que no sabemos como saber si el telefono en un determinado momento tiene senal o no.
         self.redMovil=False
-        self.internet=False
-        self.aplicaciones={'Contactos':Contactos(),'Telefono':Telefono(self.numero)}
+        self.internet=False         #-> CONFIGURACION ? supongo que queda aca. pero los metodos de encendido pasan a configuracion.
+        self.aplicaciones={'Contactos':Contactos(),'Telefono':Telefono(self.numero)} #diccionario de aplicaciones descargadas. Por defecto vienen estas, y no se pueden borrar.
         #linkear contactos con telefono y sms
         self.aplicaciones['Telefono'].contactos=self.aplicaciones['Contactos'].contactos
         #self.aplicaciones['SMS'].contactos=self.aplicaciones['contactos'].contactos
@@ -54,6 +54,10 @@ class Celular:
         if not self.apagado:
             if not self.bloqueado:
                 self.bloquear()
+            if self.internet:
+                self.desactivarInternet()
+            if self.redMovil:
+                self.desactivarRedMovil()
             self.apagado = True
             print('Se apago el celular')
         else:
@@ -128,7 +132,8 @@ class Celular:
     def __str__(self):
         return f'El celular de {self.nombre} modelo {self.modelo} tiene numero de celular {self.numero}'
 
-    #METODO SINCRONIZACION
+    # def borrarAplicacion(self,nombreApp):
+    #     verificar que la aplicacion este en las disponibles de app store para que no sea una aplicacion que venga predeterminada en el telefono
     
 #DUDAS LEANDRO: TORRE
 
