@@ -40,6 +40,7 @@ class Celular:
         #linkear contactos con telefono y sms
         self.aplicaciones['Telefono'].contactos = self.aplicaciones['Contactos'].contactos
         self.aplicaciones['SMS'].contactos = self.aplicaciones['Contactos'].contactos
+        self.appActiva = None
     
     #prender el telefono si esta apagado    
     def prender(self):
@@ -135,7 +136,8 @@ class Celular:
         if nombre not in self.aplicaciones:
             raise ValueError('No tenes descargada esa App')
         else:
-            self.aplicaciones[nombre].mostrarMenu()
+            self.appActiva = self.aplicaciones[nombre]
+            # self.aplicaciones[nombre].mostrarMenu()
         
     def __str__(self):
         return f'El celular de {self.nombre} modelo {self.modelo} tiene numero de celular {self.numero}'

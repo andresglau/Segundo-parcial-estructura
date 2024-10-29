@@ -9,7 +9,7 @@ class Aplicacion:
         pass
 
 class AplicacionComunicacion(Aplicacion):       #ACA SE INCLUYE A TELEFONO, CONTACTOS (hay que ver SMS pero me parece que no)
-    def __init__(self, numero):
+    def __init__(self, numero: int):
         self.contactos = {}
         self.miNumero = numero
     def verListaContactos(self):
@@ -141,8 +141,8 @@ class SMS(AplicacionComunicacion):
         self.chatAbierto = False
     
     def crearChat(self, numero, torre:Torre):
-        if not numero in torre.telefonosRegistrados:
-            raise ValueError('Telefono no registrado en la central')
+        if not numero in torre.telefonosRegistrados or not self.miNumero in torre.telefonosRegistrados:
+            raise ValueError('Hay un telefono no registrado en la central')
         elif numero in self.misChats:
             raise ValueError('Ese chat ya existe')
         self.misChats[numero]=Chat(self.miNumero,numero)

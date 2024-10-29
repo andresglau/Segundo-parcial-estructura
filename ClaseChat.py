@@ -18,7 +18,7 @@ class Chat:
         self.fechaUltimoMensaje = datetime.datetime.now()
         torre.recibirMensaje(mensaje)
     
-    #def borrarMensaje(self):
+    #def borrarMensaje(self):       #IMPORTANTE
 
     #def verEstadoUltimoMensaje(self):      PARA VER SI EL ULTIMO
     
