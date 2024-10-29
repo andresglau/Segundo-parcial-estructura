@@ -2,14 +2,16 @@ from collections import deque
 from ClaseTorre import Torre        
 from ClaseContacto import Contacto
 from ClaseLlamada import Llamada
+from ClaseChat import Chat
 
 class Aplicacion:
     def __init__(self):
         pass
 
 class AplicacionComunicacion(Aplicacion):       #ACA SE INCLUYE A TELEFONO, CONTACTOS (hay que ver SMS pero me parece que no)
-    def __init__(self):
+    def __init__(self, numero):
         self.contactos = {}
+        self.miNumero = numero
     def verListaContactos(self):
         for nombre in list(sorted(self.contactos)):
             print(self.contactos[nombre])
@@ -28,8 +30,8 @@ class AplicacionComunicacion(Aplicacion):       #ACA SE INCLUYE A TELEFONO, CONT
 class Contactos(AplicacionComunicacion):
     nombre = 'Contactos'
     icono = None
-    def __init__(self):
-        super().__init__()
+    def __init__(self, numero):
+        super().__init__(numero)
         
     def agregarContacto(self, nombre, numTelefono):
         if nombre in self.contactos:
@@ -71,8 +73,7 @@ class Telefono(AplicacionComunicacion):
     icono=None
     
     def __init__(self,numero):
-        super().__init__()
-        self.miNumero = numero
+        super().__init__(numero)
         self.registroDeLlamadas = deque() #cola. ordenada de anterior a reciente. append, popleft
         self.enLlamada = False #y se cambia cuando esta en llamada a la Llamada correspondiente
     
@@ -132,3 +133,47 @@ class Telefono(AplicacionComunicacion):
     def recibirCorte(self,llamada: Llamada):
         self.enLlamada=False
         self.registrarLlamadaTelefono(llamada)
+        
+class SMS(AplicacionComunicacion):
+    def __init__(self, numero):
+        super().__init__(numero)
+        self.misChats={}        #{numero: objeto Chat}      #VER SI NUMERO ES INT O STR
+        self.chatAbierto = False
+    
+    def crearChat(self, numero, torre:Torre):
+        if not numero in torre.telefonosRegistrados:
+            raise ValueError('Telefono no registrado en la central')
+        elif numero in self.misChats:
+            raise ValueError('Ese chat ya existe')
+        self.misChats[numero]=Chat(self.miNumero,numero)
+        torre.telefonosRegistrados[numero].aplicaciones['SMS'].misChats[self.miNumero]=self.misChats[numero]
+
+    def abrirChatPorNumero(self, numero):
+        if numero not in self.misChats:
+            print('No existe ese chat')
+        else:
+            self.chatAbierto = self.misChats[numero]
+        
+    def abrirChatPorNombre(self, nombre):
+        if nombre not in self.contactos:
+            raise ValueError('Ese nombre no esta en tus contactos')
+        else:
+            if self.contactos[nombre].numTelefono not in self.misChats:
+                print('No existe ese chat')
+            else:
+                self.chatAbierto = self.misChats[self.contactos[nombre].numTelefono]
+    
+    def cerrarChat(self):
+       self.chatAbierto = False
+    
+    def verChats(self):
+        for chat in list(sorted(self.misChats.values(), reverse = True)):
+            print(chat)
+            
+    def borrarChat(self, numero, torre: Torre):
+        if numero not in self.misChats:
+            print('No existe ese chat')
+        else:
+            self.misChats.pop(numero)
+            torre.telefonosRegistrados[numero].aplicaciones['SMS'].misChats.pop(self.miNumero) #Aunque no suceda en la realidad, si alguien borra un chat, se elimina para ambos
+        

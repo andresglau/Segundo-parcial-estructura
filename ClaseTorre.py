@@ -3,13 +3,15 @@ class Torre:   #cambiar todos los "torre" a "central"
     
     def __init__(self):
         self.telefonosRegistrados={} #{numero,objeto}
-        self.registroDeLlamadas=deque()
+        self.registroDeLlamadas=deque()     #O lista secuencial?
         self.registroDeMensajes=deque()
+        self.mensajesPendientes={} #diccionaro {numero: cola de mensajes pendientes que se entregan cuando se conecta a internet}
     
     #agregar telefono
     def agregarTelefono(self, celular): #en principio le pasamos el objeto celular como parametro
         if celular.numero not in self.telefonosRegistrados:
             self.telefonosRegistrados[celular.numero]=celular
+            self.mensajesPendientes[celular.numero]=deque()
         else:
             raise ValueError('Telefono ya registrado')
         
@@ -21,7 +23,7 @@ class Torre:   #cambiar todos los "torre" a "central"
             self.telefonosRegistrados.pop(numero)
             
     #verificar estado
-    def verificarEstado(self, aplicacionDeOrigen, numTelefono, mensaje=None): #por defecto es None por si hace llamada
+    def verificarEstado(self, aplicacionDeOrigen, numTelefono): #por defecto es None por si hace llamada
         if numTelefono in self.telefonosRegistrados:
             if aplicacionDeOrigen=='Telefono':
                 if self.telefonosRegistrados[numTelefono].apagado:
@@ -33,11 +35,30 @@ class Torre:   #cambiar todos los "torre" a "central"
                 elif self.telefonosRegistrados[numTelefono].aplicaciones['Telefono'].enLlamada:
                     print('Celular ocupado')
                     return False
-                else:
-                    return True
+                return True
             elif aplicacionDeOrigen=='SMS':
-                pass
+                if self.telefonosRegistrados[numTelefono].apagado:      #SE REPITE
+                    print('Celular apagado')
+                    return False
+                elif not self.telefonosRegistrados[numTelefono].internet:
+                    print('Celular sin internet')
+                    return False
+                return True
 
         else:
             print('Celular no registrado')
             return False
+        
+    def recibirMensaje(self, mensaje):
+        self.registroDeMensajes.append(mensaje)
+        if self.verificarEstado('SMS',mensaje.numReceptor): #si lo puede recibir, lo recibe
+            mensaje.entregado=True
+        else: #sino una vez que encienda el internet, quiere decir que tambien esta prendido, recibe el mensaje
+            self.mensajesPendientes[mensaje.numReceptor].append(mensaje)
+            
+    def entregarMensajes(self, numero):
+        if self.mensajesPendientes[numero]:
+            for mensaje in self.mensajesPendientes[numero]:
+                mensaje.entregado=True
+            self.mensajesPendientes[numero].clear()
+            

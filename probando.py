@@ -1,5 +1,8 @@
 from collections import deque
-from ClaseContacto import Contacto
+# from ClaseContacto import Contacto
+# from datetime import datetime
+# from ClaseChat import *
+
 
 class Contacto:
     def __init__(self, nombre, numTelefono = None):
@@ -79,6 +82,31 @@ class Telefono(AplicacionComunicacion):
 #     def __init__(self):
 #         self.contactosMensajes={}
 #         self.casillaMensajes=deque()
-        
-dic={'andi':Contacto('andi',1)}
-print(list(map(lambda contacto: contacto.numTelefono,dic.values())))
+import time
+# from ClaseChat import Chat
+
+# a=Chat(4,5)
+# time.sleep(2)
+# b=Chat(5,6)
+# time.sleep(5)
+# c=Chat(5,7)
+
+# dic={4:a,6:b,7:c}
+
+# b.enviarMensaje('hola',6)
+
+# for chat in list(sorted(dic.values(), reverse = True)):
+#     print(chat)
+
+class Mensaje:
+    def __init__(self, con):
+        self.con = con
+a= deque()
+a.append(Mensaje('rr'))
+print('Antes')
+print(type(a))
+print(a)
+a.clear()
+print('Despues')
+print(a)
+print(type(a))

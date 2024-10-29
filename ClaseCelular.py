@@ -1,6 +1,6 @@
 from ClaseTorre import Torre
 from ClaseAplicacion import *
-from ClaseAplicacion import Telefono, Contactos
+from ClaseAplicacion import Telefono, Contactos, SMS
 
 class Celular:
     
@@ -36,10 +36,10 @@ class Celular:
         #la funcion de red movil es permitir realizar una llamada. Asumimos que se activa desde el telefono ya que no sabemos como saber si el telefono en un determinado momento tiene senal o no.
         self.redMovil=False
         self.internet=False         #-> CONFIGURACION ? supongo que queda aca. pero los metodos de encendido pasan a configuracion.
-        self.aplicaciones={'Contactos':Contactos(),'Telefono':Telefono(self.numero)} #diccionario de aplicaciones descargadas. Por defecto vienen estas, y no se pueden borrar.
+        self.aplicaciones={'Contactos':Contactos(self.numero),'Telefono':Telefono(self.numero), 'SMS':SMS(self.numero)} #diccionario de aplicaciones descargadas. Por defecto vienen estas, y no se pueden borrar.
         #linkear contactos con telefono y sms
-        self.aplicaciones['Telefono'].contactos=self.aplicaciones['Contactos'].contactos
-        #self.aplicaciones['SMS'].contactos=self.aplicaciones['contactos'].contactos
+        self.aplicaciones['Telefono'].contactos = self.aplicaciones['Contactos'].contactos
+        self.aplicaciones['SMS'].contactos = self.aplicaciones['Contactos'].contactos
     
     #prender el telefono si esta apagado    
     def prender(self):
@@ -108,11 +108,13 @@ class Celular:
             raise ValueError('El celular esta apagado')
         
     #activar internet    
-    def activarInternet(self):
+    def activarInternet(self, torre:Torre):
         if not self.apagado:
             if not self.internet:
                 self.internet = True
                 print('Se activo el internet')
+                if self.numero in torre.telefonosRegistrados:
+                    torre.entregarMensajes(self.numero) #recibe los SMS que le enviaron cuando no tenia internet
             else:
                 raise ValueError('La internet ya esta activado')
         else:
@@ -129,13 +131,18 @@ class Celular:
         else:
             raise ValueError('El celular esta apagado')
         
+    def abrirApp(self, nombre):
+        if nombre not in self.aplicaciones:
+            raise ValueError('No tenes descargada esa App')
+        else:
+            self.aplicaciones[nombre].mostrarMenu()
+        
     def __str__(self):
         return f'El celular de {self.nombre} modelo {self.modelo} tiene numero de celular {self.numero}'
 
     # def borrarAplicacion(self,nombreApp):
     #     verificar que la aplicacion este en las disponibles de app store para que no sea una aplicacion que venga predeterminada en el telefono
     
-#DUDAS LEANDRO: TORRE
 
 #main
 torre=Torre()
@@ -157,29 +164,41 @@ except ValueError as e:
     
 celu.prender()
 celu.desbloquear()
-celu.activarInternet()
+celu.activarInternet(torre)
 celu.activarRedMovil()
 
 celu2 = Celular('Andres', 'iphone 15', 'iOS 7.1', 150, 64, 1167671659)
 celu2.prender()
-celu2.activarInternet()
+celu2.activarInternet(torre)
 celu2.activarRedMovil()
 
 torre.agregarTelefono(celu)
 torre.agregarTelefono(celu2)
 
 celu2.aplicaciones['Contactos'].agregarContacto('isidro',1156789023)
-celu.aplicaciones['Telefono'].llamar(1167671659,torre)
+celu.aplicaciones['Telefono'].llamarPorTeclado(1167671659,torre)
 a=input('hola')
 celu.aplicaciones['Telefono'].cortarLlamada(torre)
-print(celu.aplicaciones['Telefono'].registroDeLlamadas)
-print('')
-print(celu2.aplicaciones['Telefono'].registroDeLlamadas)
-print('')
+print(celu.aplicaciones['Telefono'].registroDeLlamadas, end = '\n')
+print(celu2.aplicaciones['Telefono'].registroDeLlamadas, end = '\n')
 print(torre.registroDeLlamadas)
 
+celu.aplicaciones['SMS'].crearChat(1167671659,torre)
+
+celu2.aplicaciones['SMS'].abrirChatPorNombre('isidro')
+celu2.aplicaciones['SMS'].chatAbierto.enviarMensaje('MENSAJE',celu.numero,torre)
 
 
+celu2.aplicaciones['SMS'].verChats()
+
+
+celu.desactivarInternet()
+
+celu2.aplicaciones['SMS'].chatAbierto.enviarMensaje('Estas sin internet',celu.numero,torre)
+
+celu.activarInternet(torre)
+
+celu2.aplicaciones['SMS'].chatAbierto.verChat()
 
 
 
