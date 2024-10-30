@@ -1,4 +1,5 @@
 from collections import deque
+
 class Torre:   #cambiar todos los "torre" a "central"
     
     def __init__(self):
@@ -23,30 +24,30 @@ class Torre:   #cambiar todos los "torre" a "central"
             self.telefonosRegistrados.pop(numero)
             
     #verificar estado
-    def verificarEstado(self, aplicacionDeOrigen, numTelefono): #por defecto es None por si hace llamada
+    def verificarEstado(self, aplicacionDeOrigen, numTelefono):
         if numTelefono in self.telefonosRegistrados:
             if aplicacionDeOrigen=='Telefono':
                 if self.telefonosRegistrados[numTelefono].apagado:
-                    print('Celular apagado')
+                    print(f'Celular {numTelefono} apagado')
                     return False
                 elif not self.telefonosRegistrados[numTelefono].redMovil:
-                    print('Celular sin red movil')
+                    print(f'Celular {numTelefono} sin red movil')
                     return False
                 elif self.telefonosRegistrados[numTelefono].aplicaciones['Telefono'].enLlamada:
-                    print('Celular ocupado')
+                    print(f'Celular {numTelefono} ocupado')
                     return False
                 return True
             elif aplicacionDeOrigen=='SMS':
                 if self.telefonosRegistrados[numTelefono].apagado:      #SE REPITE
-                    print('Celular apagado')
+                    print(f'Celular {numTelefono} apagado')
                     return False
                 elif not self.telefonosRegistrados[numTelefono].internet:
-                    print('Celular sin internet')
+                    print(f'Celular {numTelefono} sin internet')
                     return False
                 return True
 
         else:
-            print('Celular no registrado')
+            print(f'Celular {numTelefono} no registrado')
             return False
         
     def recibirMensaje(self, mensaje):

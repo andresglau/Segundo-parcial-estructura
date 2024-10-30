@@ -13,8 +13,14 @@ class AplicacionComunicacion(Aplicacion):       #ACA SE INCLUYE A TELEFONO, CONT
         self.contactos = {}
         self.miNumero = numero
     def verListaContactos(self):
-        for nombre in list(sorted(self.contactos)):
+        print('Lista de contactos:')
+        entro=False
+        for indice,nombre in enumerate(list(sorted(self.contactos))):
+            if indice==0:
+                entro=True
             print(self.contactos[nombre])
+        if not entro:
+            print('No hay contactos')
             
     def verContactosEnParticular(self, subcadena):
         contactosAMostrar=[]
@@ -47,6 +53,8 @@ class Contactos(AplicacionComunicacion):
             raise ValueError('Ese nombre no esta en tus contactos')
         elif nombreNuevo==None and numTelefonoNuevo==None:
             raise ValueError('No esta realizando ninguna modificacion')
+        if len(str(numTelefonoNuevo))!=10 or str(numTelefonoNuevo)[:2]!='11' or str(numTelefonoNuevo)[2]=='0' or numTelefonoNuevo<0:
+            raise ValueError('numero de celular incorrecto. Debe tener el siguiente formato: 1123456789')
         else:
             if nombreNuevo and numTelefonoNuevo:
                 self.contactos[nombreOriginal].cambiarNombre(nombreNuevo)
@@ -127,12 +135,16 @@ class Telefono(AplicacionComunicacion):
             llamada.cortarLlamada()
             self.enLlamada=False
             self.registrarLlamadaTelefono(llamada)
-            torre.telefonosRegistrados[llamada.numReceptor].aplicaciones['Telefono'].recibirCorte(llamada)
+            torre.telefonosRegistrados[llamada.numEmisor].aplicaciones['Telefono'].recibirCorte(llamada)
             self.registrarLlamadaTorre(llamada, torre)
             
     def recibirCorte(self,llamada: Llamada):
         self.enLlamada=False
         self.registrarLlamadaTelefono(llamada)
+    
+    def verHistorialLlamadas(self):
+        for llamada in self.registroDeLlamadas:
+            print(llamada)
         
 class SMS(AplicacionComunicacion):
     def __init__(self, numero):
