@@ -11,7 +11,7 @@ class Celular:
     #No se pueden repetir numeros celulares
     numerosUso=set()
     
-    def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int, codigo: int):
+    def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int, codigo: int, mail: str):
         #verificaciones
         if modelo not in self.modelosPermitidos:
             raise ValueError('modelo no permitido')
@@ -21,6 +21,8 @@ class Celular:
             raise ValueError('numero de celular usado')
         if len(str(codigo))!=4 or type(codigo)!=int:
             raise ValueError('Codigo incorrecto. Debe tener el siguiente formato 1234')
+        if mail in Email.emailsRegistrados:           #VALIDAR ADEMAS QUE SEA UN FORMATO DE MAIL VALIDO
+            raise ValueError('No puede tener ese mail. Ya lo tiene otro usuario')
             
         #instanciar
         if self.idUnicos:
@@ -44,7 +46,8 @@ class Celular:
         self.modoAvion=False
         self.codigo=codigo
         self.aplicaciones={Contactos.nombre:Contactos(self.numero), Telefono.nombre:Telefono(self.numero),
-                           SMS.nombre:SMS(self.numero), AppStore.nombre: AppStore(self), }
+                           SMS.nombre:SMS(self.numero), AppStore.nombre: AppStore(self), 
+                           Configuracion.nombre:Configuracion(self), Email.nombre:Email(mail)}
         #diccionario de aplicaciones descargadas. Por defecto vienen estas, y no se pueden borrar.
         
         #linkear contactos con telefono y sms
@@ -114,13 +117,13 @@ class Celular:
     def borrarAplicacion(self,nombreApp):        
         if nombreApp not in self.aplicaciones:
             raise ValueError('Esa aplicacion no se puede borrar porque no esta descargada')
-        if nombreApp in self.aplicaciones and nombreApp not in AppStore.aplicacionesDisponibles:
+        elif nombreApp not in AppStore.aplicacionesDisponibles:
             print('Es una aplicacion base, no se puede eliminar')
         else:
             self.aplicaciones.pop(nombreApp)
-            print(f'Se elimino la aplicacion {nombreApp}')
+            print(f'Se elimino la aplicacion {nombreApp}') #creo que asi hace lo mismo en una linea print(f'Se elimino la aplicacion {self.aplicaciones.pop(nombreApp)}')
 
-    def verAplicaciones(self):
+    def verAplicaciones(self): #hacer un ver pantalla
         print('Aplicaciones en el celular:')
         for nombre in self.aplicaciones:
             print(nombre)

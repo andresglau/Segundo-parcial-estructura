@@ -1,5 +1,4 @@
 from ClaseAplicacion import Aplicacion
-from ClaseConfiguracion import Configuracion
 class AppStore(Aplicacion):
     nombre = 'App Store'
     icono = None
