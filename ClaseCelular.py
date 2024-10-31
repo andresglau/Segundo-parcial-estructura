@@ -21,9 +21,10 @@ class Celular:
             raise ValueError('numero de celular usado')
         if len(str(codigo))!=4 or type(codigo)!=int:
             raise ValueError('Codigo incorrecto. Debe tener el siguiente formato 1234')
-        if mail in Email.emailsRegistrados:           #VALIDAR ADEMAS QUE SEA UN FORMATO DE MAIL VALIDO
+        if mail in Email.emailsRegistrados:
             raise ValueError('No puede tener ese mail. Ya lo tiene otro usuario')
-            
+        if '@' not in mail or '.com' not in mail[-4:]:      #VALIDAR FORMATO MAIL
+            raise ValueError('Formato de mail no valido')
         #instanciar
         if self.idUnicos:
             self.id=max(self.idUnicos)+1
@@ -189,63 +190,63 @@ class Celular:
 
 
 #PROBANDO MAIN2
-try:
-    celuAndy=Celular('Andy', 'iphone 15', '12', 12, 256, 1145672241)
-    celuFede=Celular('Fede', 'iphone 15', '12', 12, 256, 1145673241)
-    torreCentral = Torre()
+# try:
+#     celuAndy=Celular('Andy', 'iphone 15', '12', 12, 256, 1145672241)
+#     celuFede=Celular('Fede', 'iphone 15', '12', 12, 256, 1145673241)
+#     torreCentral = Torre()
     
-    #COSAS BASICAS PARA PODER USARLO
-    celuIchi = Celular('Isidro', 'iphone 15', '12', 12, 256, 1145272200)
-    celuIchi.prender()
-    celuIchi.desbloquear()
+#     #COSAS BASICAS PARA PODER USARLO
+#     celuIchi = Celular('Isidro', 'iphone 15', '12', 12, 256, 1145272200)
+#     celuIchi.prender()
+#     celuIchi.desbloquear()
     
-    #ABRO CONTACTOS Y OPERO
-    # celuIchi.abrirApp('Contactos')
-    # celuIchi.appActiva.agregarContacto('Fede', 1145673241)
-    # celuIchi.appActiva.actualizarContacto('Fede', 'Fede L', 1189022331)
-    # celuIchi.appActiva.eliminarContacto('Fede L')
-    # celuIchi.appActiva.verListaContactos()
-    # celuIchi.cerrarApp()
+#     #ABRO CONTACTOS Y OPERO
+#     # celuIchi.abrirApp('Contactos')
+#     # celuIchi.appActiva.agregarContacto('Fede', 1145673241)
+#     # celuIchi.appActiva.actualizarContacto('Fede', 'Fede L', 1189022331)
+#     # celuIchi.appActiva.eliminarContacto('Fede L')
+#     # celuIchi.appActiva.verListaContactos()
+#     # celuIchi.cerrarApp()
     
-    #ABRO TELEFONO E INTENTO LLAMAR
-    celuIchi.abrirApp('Telefono')
-    # celuIchi.appActiva.llamarPorTeclado(1145672241, torreCentral)     ACA TODAVIA NO ESTA REGISTRADO
-    torreCentral.agregarTelefono(celuAndy)
-    torreCentral.agregarTelefono(celuIchi)
-    celuIchi.activarRedMovil()
-    #celuAndy activa lo suyo
-    celuAndy.prender()
-    celuAndy.activarRedMovil()
-    #seguimos
-    # celuIchi.appActiva.llamarPorTeclado(1145672241, torreCentral)
-    # celuAndy.aplicaciones['Telefono'].cortarLlamada(torreCentral)
-    # celuIchi.appActiva.cortarLlamada(torreCentral)
-    celuIchi.appActiva.verHistorialLlamadas()
+#     #ABRO TELEFONO E INTENTO LLAMAR
+#     celuIchi.abrirApp('Telefono')
+#     # celuIchi.appActiva.llamarPorTeclado(1145672241, torreCentral)     ACA TODAVIA NO ESTA REGISTRADO
+#     torreCentral.agregarTelefono(celuAndy)
+#     torreCentral.agregarTelefono(celuIchi)
+#     celuIchi.activarRedMovil()
+#     #celuAndy activa lo suyo
+#     celuAndy.prender()
+#     celuAndy.activarRedMovil()
+#     #seguimos
+#     # celuIchi.appActiva.llamarPorTeclado(1145672241, torreCentral)
+#     # celuAndy.aplicaciones['Telefono'].cortarLlamada(torreCentral)
+#     # celuIchi.appActiva.cortarLlamada(torreCentral)
+#     celuIchi.appActiva.verHistorialLlamadas()
     
-    #ABRO SMS Y MANDO MENSAJES
-    # celuIchi.appActiva.crearChat(1145272200, torreCentral)
+#     #ABRO SMS Y MANDO MENSAJES
+#     # celuIchi.appActiva.crearChat(1145272200, torreCentral)
 
-    #PRUEBO BAJAR APP
-    # celuIchi.cerrarApp()
-    # celuIchi.abrirApp('App Store')
-    # celuIchi.appActiva.verAplicacionesDisponibles()
-    # celuIchi.appActiva.descargarAplicacion('Configuracion')
-    # celuIchi.cerrarApp()
-    # celuIchi.abrirApp('Configuracion')
-    # celuIchi.verAplicaciones()
+#     #PRUEBO BAJAR APP
+#     # celuIchi.cerrarApp()
+#     # celuIchi.abrirApp('App Store')
+#     # celuIchi.appActiva.verAplicacionesDisponibles()
+#     # celuIchi.appActiva.descargarAplicacion('Configuracion')
+#     # celuIchi.cerrarApp()
+#     # celuIchi.abrirApp('Configuracion')
+#     # celuIchi.verAplicaciones()
     
 
-except BaseException as e:
-    print(e)
+# except BaseException as e:
+#     print(e)
 
 
 
-# alicaciones={'Telefono': 'Telefono(self.numero)'}
-# celu.abrirAplicacion('Telefono')
-# #self.appActiva = Telefono()
-# celu.salirAplicacion()      #self.appActiva = None  
-# #self.appActiva = AppStore()  
-# #self.appActiva = 
+# # alicaciones={'Telefono': 'Telefono(self.numero)'}
+# # celu.abrirAplicacion('Telefono')
+# # #self.appActiva = Telefono()
+# # celu.salirAplicacion()      #self.appActiva = None  
+# # #self.appActiva = AppStore()  
+# # #self.appActiva = 
 
-# #self.telefono=Telefono(self.numero)
+# # #self.telefono=Telefono(self.numero)
 

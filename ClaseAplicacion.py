@@ -14,12 +14,10 @@ class AplicacionComunicacion(Aplicacion):       #ACA SE INCLUYE A TELEFONO, CONT
         self.miNumero = numero
     def verListaContactos(self):
         print('Lista de contactos:')
-        entro=False
-        for indice,nombre in enumerate(list(sorted(self.contactos))):
-            if indice==0:
-                entro=True
-            print(self.contactos[nombre])
-        if not entro:
+        if self.contactos:
+            for indice,nombre in enumerate(list(sorted(self.contactos))):
+                print(self.contactos[nombre])
+        else:
             print('No hay contactos')
             
     def verContactosEnParticular(self, subcadena):
