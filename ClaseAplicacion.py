@@ -53,20 +53,17 @@ class Contactos(AplicacionComunicacion):
             raise ValueError('Ese nombre no esta en tus contactos')
         elif nombreNuevo==None and numTelefonoNuevo==None:
             raise ValueError('No esta realizando ninguna modificacion')
-        if len(str(numTelefonoNuevo))!=10 or str(numTelefonoNuevo)[:2]!='11' or str(numTelefonoNuevo)[2]=='0' or numTelefonoNuevo<0:
-            raise ValueError('numero de celular incorrecto. Debe tener el siguiente formato: 1123456789')
-        else:
-            if nombreNuevo and numTelefonoNuevo:
-                self.contactos[nombreOriginal].cambiarNombre(nombreNuevo)
-                self.contactos[nombreOriginal].cambiarNumTelefono(numTelefonoNuevo)
-                self.contactos[nombreNuevo]=self.contactos[nombreOriginal]
-                self.contactos.pop(nombreOriginal)
-            elif nombreNuevo:
-                self.contactos[nombreOriginal].cambiarNombre(nombreNuevo)
-                self.contactos[nombreNuevo]=self.contactos[nombreOriginal]
-                self.contactos.pop(nombreOriginal)
-            elif numTelefonoNuevo:
-                self.contactos[nombreOriginal].cambiarNumTelefono(numTelefonoNuevo)
+        if nombreNuevo and numTelefonoNuevo:
+            self.contactos[nombreOriginal].cambiarNombre(nombreNuevo)
+            self.contactos[nombreOriginal].cambiarNumTelefono(numTelefonoNuevo)
+            self.contactos[nombreNuevo]=self.contactos[nombreOriginal]
+            self.contactos.pop(nombreOriginal)
+        elif nombreNuevo:
+            self.contactos[nombreOriginal].cambiarNombre(nombreNuevo)
+            self.contactos[nombreNuevo]=self.contactos[nombreOriginal]
+            self.contactos.pop(nombreOriginal)
+        elif numTelefonoNuevo:
+            self.contactos[nombreOriginal].cambiarNumTelefono(numTelefonoNuevo)
                 
     def eliminarContacto(self,nombre):
         if nombre not in self.contactos:
@@ -103,7 +100,7 @@ class Telefono(AplicacionComunicacion):
                     torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada, torre)
 
     #recibir llamada
-    def recibirLlamada(self,llamada: Llamada,torre):       
+    def recibirLlamada(self,llamada: Llamada,torre: Torre):       
         if llamada.numEmisor in list(map(lambda contacto: contacto.numTelefono,self.contactos.values())):
             for nombre in self.contactos:                       #REEVER
                 if self.contactos[nombre].numTelefono==llamada.numEmisor:
@@ -135,7 +132,10 @@ class Telefono(AplicacionComunicacion):
             llamada.cortarLlamada()
             self.enLlamada=False
             self.registrarLlamadaTelefono(llamada)
-            torre.telefonosRegistrados[llamada.numEmisor].aplicaciones['Telefono'].recibirCorte(llamada)
+            if self.miNumero == llamada.numEmisor:
+                torre.telefonosRegistrados[llamada.numReceptor].aplicaciones['Telefono'].recibirCorte(llamada)
+            else:
+                torre.telefonosRegistrados[llamada.numEmisor].aplicaciones['Telefono'].recibirCorte(llamada)
             self.registrarLlamadaTorre(llamada, torre)
             
     def recibirCorte(self,llamada: Llamada):
@@ -147,6 +147,9 @@ class Telefono(AplicacionComunicacion):
             print(llamada)
         
 class SMS(AplicacionComunicacion):
+    nombre='SMS'
+    icono=None
+
     def __init__(self, numero):
         super().__init__(numero)
         self.misChats={}        #{numero: objeto Chat}      #VER SI NUMERO ES INT O STR
@@ -188,4 +191,3 @@ class SMS(AplicacionComunicacion):
         else:
             self.misChats.pop(numero)
             torre.telefonosRegistrados[numero].aplicaciones['SMS'].misChats.pop(self.miNumero) #Aunque no suceda en la realidad, si alguien borra un chat, se elimina para ambos
-        

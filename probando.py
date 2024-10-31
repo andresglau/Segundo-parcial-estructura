@@ -98,15 +98,17 @@ import time
 # for chat in list(sorted(dic.values(), reverse = True)):
 #     print(chat)
 
-class Mensaje:
-    def __init__(self, con):
-        self.con = con
-a= deque()
-a.append(Mensaje('rr'))
-print('Antes')
-print(type(a))
-print(a)
-a.clear()
-print('Despues')
-print(a)
-print(type(a))
+# class Mensaje:
+#     def __init__(self, con):
+#         self.con = con
+# a= deque()
+# a.append(Mensaje('rr'))
+# print('Antes')
+# print(type(a))
+# print(a)
+# a.clear()
+# print('Despues')
+# print(a)
+# print(type(a))
+
+print(type(1234)==int)

@@ -1,6 +1,8 @@
 from ClaseTorre import Torre
-from ClaseAplicacion import *
 from ClaseAplicacion import Telefono, Contactos, SMS
+from ClaseAppStore import AppStore
+from ClaseConfiguracion import Configuracion
+from ClaseEmail import Email
 
 class Celular:
     
@@ -9,7 +11,7 @@ class Celular:
     #No se pueden repetir numeros celulares
     numerosUso=set()
     
-    def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int):
+    def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int, codigo: int):
         #verificaciones
         if modelo not in self.modelosPermitidos:
             raise ValueError('modelo no permitido')
@@ -17,6 +19,8 @@ class Celular:
             raise ValueError('numero de celular incorrecto. Debe tener el siguiente formato: 1123456789')
         if numero in self.numerosUso:
             raise ValueError('numero de celular usado')
+        if len(str(codigo))!=4 or type(codigo)!=int:
+            raise ValueError('Codigo incorrecto. Debe tener el siguiente formato 1234')
             
         #instanciar
         if self.idUnicos:
@@ -35,8 +39,14 @@ class Celular:
         self.bloqueado = True
         #la funcion de red movil es permitir realizar una llamada. Asumimos que se activa desde el telefono ya que no sabemos como saber si el telefono en un determinado momento tiene senal o no.
         self.redMovil=False
-        self.internet=False         #-> CONFIGURACION ? supongo que queda aca. pero los metodos de encendido pasan a configuracion.
-        self.aplicaciones={'Contactos':Contactos(self.numero),'Telefono':Telefono(self.numero), 'SMS':SMS(self.numero)} #diccionario de aplicaciones descargadas. Por defecto vienen estas, y no se pueden borrar.
+        self.internet=False
+        self.bluetooth=False
+        self.modoAvion=False
+        self.codigo=codigo
+        self.aplicaciones={Contactos.nombre:Contactos(self.numero), Telefono.nombre:Telefono(self.numero),
+                           SMS.nombre:SMS(self.numero), AppStore.nombre: AppStore(self), }
+        #diccionario de aplicaciones descargadas. Por defecto vienen estas, y no se pueden borrar.
+        
         #linkear contactos con telefono y sms
         self.aplicaciones['Telefono'].contactos = self.aplicaciones['Contactos'].contactos
         self.aplicaciones['SMS'].contactos = self.aplicaciones['Contactos'].contactos
@@ -65,11 +75,14 @@ class Celular:
             raise ValueError('El celular ya esta apagado')
         
     #desbloquear el telefono si esta bloqueado    
-    def desbloquear(self):
+    def desbloquear(self, codigo):
         if not self.apagado:
             if self.bloqueado:
-                self.bloqueado = False
-                print('Se desbloqueo el celular')
+                if codigo==self.codigo:
+                    self.bloqueado = False
+                    print('Se desbloqueo el celular')
+                else:
+                    print('Codigo incorrecto')
             else:
                 raise ValueError('El telefono ya esta desbloqueado')
         else:
@@ -85,54 +98,10 @@ class Celular:
                 raise ValueError('El telefono ya esta bloqueado')
         else:
             raise ValueError('El celular esta apagado')
-    
-    #activar red movil    
-    def activarRedMovil(self):
-        if not self.apagado:
-            if not self.redMovil:
-                self.redMovil = True
-                print('Se activo la red movil')
-            else:
-                raise ValueError('La red movil ya esta activada')
-        else:
-            raise ValueError('El celular esta apagado')
-        
-    #desactivar red movil
-    def desactivarRedMovil(self):
-        if not self.apagado:
-            if self.redMovil:
-                self.redMovil = False
-                print('Se desactivo la red movil')
-            else:
-                raise ValueError('La red movil ya esta desactivada')
-        else:
-            raise ValueError('El celular esta apagado')
-        
-    #activar internet    
-    def activarInternet(self, torre:Torre):
-        if not self.apagado:
-            if not self.internet:
-                self.internet = True
-                print('Se activo el internet')
-                if self.numero in torre.telefonosRegistrados:
-                    torre.entregarMensajes(self.numero) #recibe los SMS que le enviaron cuando no tenia internet
-            else:
-                raise ValueError('La internet ya esta activado')
-        else:
-            raise ValueError('El celular esta apagado')
-        
-    #desactivar internet
-    def desactivarInternet(self):
-        if not self.apagado:
-            if self.internet:
-                self.internet = False
-                print('Se desactivo el internet')
-            else:
-                raise ValueError('El internet ya esta desactivado')
-        else:
-            raise ValueError('El celular esta apagado')
         
     def abrirApp(self, nombre):
+        if self.appActiva != None:
+            raise ValueError('Todavia esta en otra aplicacion')
         if nombre not in self.aplicaciones:
             raise ValueError('No tenes descargada esa App')
         else:
@@ -141,13 +110,23 @@ class Celular:
     
     def cerrarApp(self):
         self.appActiva = None
-        
+
+    def borrarAplicacion(self,nombreApp):        
+        if nombreApp not in self.aplicaciones:
+            raise ValueError('Esa aplicacion no se puede borrar porque no esta descargada')
+        if nombreApp in self.aplicaciones and nombreApp not in AppStore.aplicacionesDisponibles:
+            print('Es una aplicacion base, no se puede eliminar')
+        else:
+            self.aplicaciones.pop(nombreApp)
+            print(f'Se elimino la aplicacion {nombreApp}')
+
+    def verAplicaciones(self):
+        print('Aplicaciones en el celular:')
+        for nombre in self.aplicaciones:
+            print(nombre)
+    
     def __str__(self):
         return f'El celular de {self.nombre} modelo {self.modelo} tiene numero de celular {self.numero}'
-
-    # def borrarAplicacion(self,nombreApp):
-    #     verificar que la aplicacion este en las disponibles de app store para que no sea una aplicacion que venga predeterminada en el telefono
-    
 
 #MAIN
 # torre=Torre()
@@ -235,11 +214,24 @@ try:
     celuAndy.prender()
     celuAndy.activarRedMovil()
     #seguimos
-    celuIchi.appActiva.llamarPorTeclado(1145672241, torreCentral)
-    celuAndy.aplicaciones['Telefono'].cortarLlamada(torreCentral)
+    # celuIchi.appActiva.llamarPorTeclado(1145672241, torreCentral)
+    # celuAndy.aplicaciones['Telefono'].cortarLlamada(torreCentral)
+    # celuIchi.appActiva.cortarLlamada(torreCentral)
     celuIchi.appActiva.verHistorialLlamadas()
-
     
+    #ABRO SMS Y MANDO MENSAJES
+    # celuIchi.appActiva.crearChat(1145272200, torreCentral)
+
+    #PRUEBO BAJAR APP
+    # celuIchi.cerrarApp()
+    # celuIchi.abrirApp('App Store')
+    # celuIchi.appActiva.verAplicacionesDisponibles()
+    # celuIchi.appActiva.descargarAplicacion('Configuracion')
+    # celuIchi.cerrarApp()
+    # celuIchi.abrirApp('Configuracion')
+    # celuIchi.verAplicaciones()
+    
+
 except BaseException as e:
     print(e)
 
