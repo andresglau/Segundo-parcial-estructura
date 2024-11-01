@@ -3,7 +3,7 @@ from collections import deque
 from datetime import date
 
 class Mail():
-    def __init__(self, mailEmisor, mailReceptor, asunto: str, contenido: str):        
+    def __init__(self, mailEmisor, mailReceptor, asunto: str, contenido: str):     
         self.mailEmisor = mailEmisor
         self.mailReceptor = mailReceptor
         self.asunto = asunto
@@ -19,6 +19,7 @@ class Email(Aplicacion):
     icono = None
     emailsRegistrados = {}
     def __init__(self, miMail: str):
+        super().__init__()
         self.miMail = miMail
         self.emailsRegistrados[miMail]=self     #al instanciar el telefono se verifica que no haya otro mail igual
         self.bandejaEntrada = deque()           #PILA

@@ -3,28 +3,35 @@ from ClaseTorre import Torre
 from ClaseContacto import Contacto
 from ClaseLlamada import Llamada
 from ClaseChat import Chat
+import Validaciones
 
 class Aplicacion:
     def __init__(self):
-        pass
+        self.opciones = None
+    
+    def volver(self):
+        return True
 
-class AplicacionComunicacion(Aplicacion):       #ACA SE INCLUYE A TELEFONO, CONTACTOS (hay que ver SMS pero me parece que no)
-    def __init__(self, numero: int):
+class AplicacionComunicacion(Aplicacion):
+    def __init__(self, numero: int, torre: Torre):
+        super().__init__()
         self.contactos = {}
         self.miNumero = numero
+        self.torre=torre
     def verListaContactos(self):
         print('Lista de contactos:')
         if self.contactos:
-            for indice,nombre in enumerate(list(sorted(self.contactos))):
+            for nombre in list(sorted(self.contactos)):
                 print(self.contactos[nombre])
         else:
             print('No hay contactos')
             
-    def verContactosEnParticular(self, subcadena):
+    def verContactosEnParticular(self):
+        subcadena=input('Ingrese una subcadena para filtrar contactos: ')
         contactosAMostrar=[]
         for nombreAgendado in self.contactos:
             if subcadena in nombreAgendado:
-                contactosAMostrar.append(self.contactos[subcadena])
+                contactosAMostrar.append(self.contactos[nombreAgendado])
         if contactosAMostrar:
             for contacto in list(sorted(contactosAMostrar)):
                 print(contacto)
@@ -34,71 +41,101 @@ class AplicacionComunicacion(Aplicacion):       #ACA SE INCLUYE A TELEFONO, CONT
 class Contactos(AplicacionComunicacion):
     nombre = 'Contactos'
     icono = None
-    def __init__(self, numero):
-        super().__init__(numero)
-        
-    def agregarContacto(self, nombre, numTelefono):
+    def __init__(self, numero, torre: Torre):
+        super().__init__(numero, torre)
+        self.opciones = [('Ver contactos',self.verListaContactos,[]),
+                         ('Ver contactos en particular',self.verContactosEnParticular,[]),
+                         ('Agregar contacto', self.agregarContacto,[]),
+                         ('Actualizar contacto',self.actualizarContacto,[]),
+                         ('Eliminar contacto',self.eliminarContacto,[]),
+                         ('Volver a pantalla de inicio', self.volver, [])]
+
+    def agregarContacto(self):
+        nombre = input('Ingrese el nombre para agendar el contacto: ')
         if nombre in self.contactos:
             print('Este nombre ya existe')
-        elif numTelefono in list(map(lambda contacto: contacto.numTelefono,self.contactos.values())):
-            print('Ese numero ya existe')
         else:
-            self.contactos[nombre]=Contacto(nombre,numTelefono)
+            numTelefono = input('Ingrese un numero de telefono para el contacto: ')
+            if Validaciones.validarFormatoNumTelefono(numTelefono):
+                pass
+            elif numTelefono in list(map(lambda contacto: contacto.numTelefono,self.contactos.values())):
+                print('Ese numero ya esta agendado')
+            else:
+                self.contactos[nombre]=Contacto(nombre,numTelefono)
     
     #si no vas a querer cambiar ambas cosas, pasar None en el parametro indicado.
-    def actualizarContacto(self, nombreOriginal, nombreNuevo, numTelefonoNuevo):
-        if nombreOriginal not in self.contactos:
-            raise ValueError('Ese nombre no esta en tus contactos')
-        elif nombreNuevo==None and numTelefonoNuevo==None:
-            raise ValueError('No esta realizando ninguna modificacion')
-        if nombreNuevo and numTelefonoNuevo:
-            self.contactos[nombreOriginal].cambiarNombre(nombreNuevo)
-            self.contactos[nombreOriginal].cambiarNumTelefono(numTelefonoNuevo)
-            self.contactos[nombreNuevo]=self.contactos[nombreOriginal]
-            self.contactos.pop(nombreOriginal)
-        elif nombreNuevo:
-            self.contactos[nombreOriginal].cambiarNombre(nombreNuevo)
-            self.contactos[nombreNuevo]=self.contactos[nombreOriginal]
-            self.contactos.pop(nombreOriginal)
-        elif numTelefonoNuevo:
-            self.contactos[nombreOriginal].cambiarNumTelefono(numTelefonoNuevo)
+    def actualizarContacto(self):
+        try:
+            nombreOriginal=input('Ingrese el nombre del contacto a modificar: ')
+            if nombreOriginal not in self.contactos:
+                raise ValueError('Ese nombre no esta en tus contactos')
+            nombreNuevo=input('Ingrese el nombre nuevo. Si solo desea cambiar el numero, toque enter: ')
+            numTelefonoNuevo=input('Ingrese el numero nuevo. Si solo desea cambiar el nombre, toque enter: ')
+            if nombreNuevo=='' and numTelefonoNuevo=='':
+                raise ValueError('No esta realizando ninguna modificacion')
+            if nombreNuevo and numTelefonoNuevo:
+                if Validaciones.validarFormatoNumTelefono(numTelefonoNuevo):
+                    pass
+                elif numTelefonoNuevo in list(map(lambda contacto: contacto.numTelefono,self.contactos.values())):
+                    print('Ese numero ya esta agendado')
+                else:
+                    self.contactos[nombreOriginal].cambiarNombre(nombreNuevo)
+                    self.contactos[nombreOriginal].cambiarNumTelefono(numTelefonoNuevo)
+                    self.contactos[nombreNuevo]=self.contactos[nombreOriginal]
+                    self.contactos.pop(nombreOriginal)
+            elif nombreNuevo:
+                self.contactos[nombreOriginal].cambiarNombre(nombreNuevo)
+                self.contactos[nombreNuevo]=self.contactos[nombreOriginal]
+                self.contactos.pop(nombreOriginal)
+            elif numTelefonoNuevo:
+                if Validaciones.validarFormatoNumTelefono(numTelefonoNuevo):
+                    pass
+                elif numTelefonoNuevo in list(map(lambda contacto: contacto.numTelefono,self.contactos.values())):
+                    print('Ese numero ya esta agendado')
+                else:
+                    self.contactos[nombreOriginal].cambiarNumTelefono(numTelefonoNuevo)
+        except ValueError as e:
+            print(e)
                 
-    def eliminarContacto(self,nombre):
-        if nombre not in self.contactos:
-            raise ValueError('Ese nombre no esta en tus contactos')
-        else:
-            self.contactos.pop(nombre)
-            print(nombre,'eliminado')
-
+    def eliminarContacto(self):
+        try:
+            nombre=input('Ingrese el nombre del contacto a eliminar: ')
+            if nombre not in self.contactos:
+                raise ValueError('Ese nombre no esta en tus contactos')
+            else:
+                self.contactos.pop(nombre)
+                print(nombre,'eliminado')
+        except ValueError as e:
+            print(e)
+        
 
 class Telefono(AplicacionComunicacion):
     nombre='Telefono'
     icono=None
     
-    def __init__(self,numero):
-        super().__init__(numero)
+    def __init__(self,numero, torre: Torre):
+        super().__init__(numero, torre)
         self.registroDeLlamadas = deque() #cola. ordenada de anterior a reciente. append, popleft
         self.enLlamada = False #y se cambia cuando esta en llamada a la Llamada correspondiente
     
     #llamar por teclado       
-    def llamarPorTeclado(self,numero,torre):
-        if isinstance(torre,Torre): #pregunta a la torre si está disponible. si esta prendido y no está en otra llamada
-            if torre.verificarEstado(self.nombre,self.miNumero) and torre.verificarEstado(self.nombre,numero): #verifico ambos numeros
-                self.enLlamada = Llamada(self.miNumero, numero)
-                torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada, torre)
+    def llamarPorTeclado(self,numero):
+        if self.torre.verificarEstado(self.nombre,self.miNumero) and self.torre.verificarEstado(self.nombre,numero): #verifico ambos numeros
+            self.enLlamada = Llamada(self.miNumero, numero)
+            self.torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada)
 
     #llamar a un contacto
-    def llamarContacto(self, nombre, torre):
+    def llamarContacto(self, nombre):
         if nombre not in self.contactos:
             raise ValueError('Ese nombre no esta en tus contactos')
         else:
-            if isinstance(torre,Torre):
-                if torre.verificarEstado(self.nombre,self.miNumero) and torre.verificarEstado(self.nombre, self.contactos[nombre].numTelefono):
-                    self.enLlamada = Llamada(self.miNumero, self.contactos[nombre].numTelefono)
-                    torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada, torre)
+            
+            if self.torre.verificarEstado(self.nombre,self.miNumero) and self.torre.verificarEstado(self.nombre, self.contactos[nombre].numTelefono):
+                self.enLlamada = Llamada(self.miNumero, self.contactos[nombre].numTelefono)
+                self.torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada, self.torre)
 
     #recibir llamada
-    def recibirLlamada(self,llamada: Llamada,torre: Torre):       
+    def recibirLlamada(self,llamada: Llamada):       
         if llamada.numEmisor in list(map(lambda contacto: contacto.numTelefono,self.contactos.values())):
             for nombre in self.contactos:                       #REEVER
                 if self.contactos[nombre].numTelefono==llamada.numEmisor:
@@ -109,7 +146,7 @@ class Telefono(AplicacionComunicacion):
         # if datetime.datetime.now()-llamada.empezoLlamada > 10:
         #     aceptar = 0
         if respuesta=='0':
-            torre.telefonosRegistrados[llamada.numEmisor].aplicaciones['Telefono'].enLlamada=False      #COMO SIGUE LA DURACION DE LA LLAMADA
+            self.torre.telefonosRegistrados[llamada.numEmisor].aplicaciones['Telefono'].enLlamada=False      #COMO SIGUE LA DURACION DE LA LLAMADA
         else:
             self.enLlamada=llamada
             
@@ -118,11 +155,11 @@ class Telefono(AplicacionComunicacion):
         self.registroDeLlamadas.append(llamada)
     
     #registrar llamada en la torre
-    def registrarLlamadaTorre(self,llamada: Llamada, torre: Torre):
-        torre.registroDeLlamadas.append(llamada)
+    def registrarLlamadaTorre(self,llamada: Llamada):
+        self.torre.registroDeLlamadas.append(llamada)
 
     #cortar llamada
-    def cortarLlamada(self,torre: Torre):
+    def cortarLlamada(self):
         if self.enLlamada == False:
             raise ValueError('No estas en ninguna llamada')
         else:
@@ -131,10 +168,10 @@ class Telefono(AplicacionComunicacion):
             self.enLlamada=False
             self.registrarLlamadaTelefono(llamada)
             if self.miNumero == llamada.numEmisor:
-                torre.telefonosRegistrados[llamada.numReceptor].aplicaciones['Telefono'].recibirCorte(llamada)
+                self.torre.telefonosRegistrados[llamada.numReceptor].aplicaciones['Telefono'].recibirCorte(llamada)
             else:
-                torre.telefonosRegistrados[llamada.numEmisor].aplicaciones['Telefono'].recibirCorte(llamada)
-            self.registrarLlamadaTorre(llamada, torre)
+                self.torre.telefonosRegistrados[llamada.numEmisor].aplicaciones['Telefono'].recibirCorte(llamada)
+            self.registrarLlamadaTorre(llamada)
             
     def recibirCorte(self,llamada: Llamada):
         self.enLlamada=False
@@ -148,18 +185,18 @@ class SMS(AplicacionComunicacion):
     nombre='SMS'
     icono=None
 
-    def __init__(self, numero):
-        super().__init__(numero)
+    def __init__(self, numero, torre: Torre):
+        super().__init__(numero, torre)
         self.misChats={}        #{numero: objeto Chat}      #VER SI NUMERO ES INT O STR
         self.chatAbierto = False
     
-    def crearChat(self, numero, torre:Torre):
-        if not numero in torre.telefonosRegistrados or not self.miNumero in torre.telefonosRegistrados:
+    def crearChat(self, numero):
+        if not numero in self.torre.telefonosRegistrados or not self.miNumero in self.torre.telefonosRegistrados:
             raise ValueError('Hay un telefono no registrado en la central')
         elif numero in self.misChats:
             raise ValueError('Ese chat ya existe')
         self.misChats[numero]=Chat(self.miNumero,numero)
-        torre.telefonosRegistrados[numero].aplicaciones['SMS'].misChats[self.miNumero]=self.misChats[numero]
+        self.torre.telefonosRegistrados[numero].aplicaciones['SMS'].misChats[self.miNumero]=self.misChats[numero]
 
     def abrirChatPorNumero(self, numero):
         if numero not in self.misChats:
@@ -183,9 +220,9 @@ class SMS(AplicacionComunicacion):
         for chat in list(sorted(self.misChats.values(), reverse = True)):
             print(chat)
             
-    def borrarChat(self, numero, torre: Torre):
+    def borrarChat(self, numero):
         if numero not in self.misChats:
             print('No existe ese chat')
         else:
             self.misChats.pop(numero)
-            torre.telefonosRegistrados[numero].aplicaciones['SMS'].misChats.pop(self.miNumero) #Aunque no suceda en la realidad, si alguien borra un chat, se elimina para ambos
+            self.torre.telefonosRegistrados[numero].aplicaciones['SMS'].misChats.pop(self.miNumero) #Aunque no suceda en la realidad, si alguien borra un chat, se elimina para ambos

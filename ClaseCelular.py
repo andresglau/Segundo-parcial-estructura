@@ -9,22 +9,9 @@ class Celular:
     idUnicos=set()
     modelosPermitidos={'iphone 15','iphone 16','samsung s20'}
     #No se pueden repetir numeros celulares
-    numerosUso=set()
+    numerosUso=dict()
     
-    def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int, codigo: int, mail: str):
-        #verificaciones
-        if modelo not in self.modelosPermitidos:
-            raise ValueError('modelo no permitido')
-        if len(str(numero))!=10 or str(numero)[:2]!='11' or str(numero)[2]=='0' or numero<0:
-            raise ValueError('numero de celular incorrecto. Debe tener el siguiente formato: 1123456789')
-        if numero in self.numerosUso:
-            raise ValueError('numero de celular usado')
-        if len(str(codigo))!=4 or type(codigo)!=int:
-            raise ValueError('Codigo incorrecto. Debe tener el siguiente formato 1234')
-        if mail in Email.emailsRegistrados:
-            raise ValueError('No puede tener ese mail. Ya lo tiene otro usuario')
-        if '@' not in mail or '.com' not in mail[-4:]:      #VALIDAR FORMATO MAIL
-            raise ValueError('Formato de mail no valido')
+    def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int, codigo: int, mail: str, torre: Torre):
         #instanciar
         if self.idUnicos:
             self.id=max(self.idUnicos)+1
@@ -37,18 +24,18 @@ class Celular:
         self.memoriaRAM = memoriaRAM
         self.almacenamiento=almacenamiento
         self.numero=numero
-        self.numerosUso.add(numero)
+        Celular.numerosUso[numero]=self
         self.apagado = True
         self.bloqueado = True
-        #la funcion de red movil es permitir realizar una llamada. Asumimos que se activa desde el telefono ya que no sabemos como saber si el telefono en un determinado momento tiene senal o no.
+        #la funcion de red movil es permitir realizar una llamada.
         self.redMovil=False
         self.internet=False
         self.bluetooth=False
         self.modoAvion=False
         self.codigo=codigo
-        self.aplicaciones={Contactos.nombre:Contactos(self.numero), Telefono.nombre:Telefono(self.numero),
-                           SMS.nombre:SMS(self.numero), AppStore.nombre: AppStore(self), 
-                           Configuracion.nombre:Configuracion(self), Email.nombre:Email(mail)}
+        self.aplicaciones={Contactos.nombre:Contactos(self.numero,torre), Telefono.nombre:Telefono(self.numero,torre),
+                           SMS.nombre:SMS(self.numero, torre), AppStore.nombre: AppStore(self), 
+                           Configuracion.nombre:Configuracion(self, torre), Email.nombre:Email(mail)}
         #diccionario de aplicaciones descargadas. Por defecto vienen estas, y no se pueden borrar.
         
         #linkear contactos con telefono y sms
@@ -79,18 +66,26 @@ class Celular:
             raise ValueError('El celular ya esta apagado')
         
     #desbloquear el telefono si esta bloqueado    
-    def desbloquear(self, codigo):
-        if not self.apagado:
-            if self.bloqueado:
-                if codigo==self.codigo:
-                    self.bloqueado = False
-                    print('Se desbloqueo el celular')
-                else:
-                    print('Codigo incorrecto')
-            else:
-                raise ValueError('El telefono ya esta desbloqueado')
+    def desbloquear(self):
+        try:
+            codigo=int(input('Ingrese el codigo de desbloqueo: '))
+        except ValueError:
+            print('Debe ingresar un numero')
         else:
-            raise ValueError('El celular esta apagado')
+            try:
+                if not self.apagado:
+                    if self.bloqueado:
+                        if codigo==self.codigo:
+                            self.bloqueado = False
+                            print('Se desbloqueo el celular')
+                        else:
+                            print('Codigo incorrecto')
+                    else:
+                        raise ValueError('El telefono ya esta desbloqueado')
+                else:
+                    raise ValueError('El celular esta apagado')
+            except ValueError as e:
+                print(e)
     
     #bloquear el telefono si esta desblqueado        
     def bloquear(self):
@@ -127,7 +122,7 @@ class Celular:
     def verAplicaciones(self): #hacer un ver pantalla
         print('Aplicaciones en el celular:')
         for nombre in self.aplicaciones:
-            print(nombre)
+            print('\t'+nombre)
     
     def __str__(self):
         return f'El celular de {self.nombre} modelo {self.modelo} tiene numero de celular {self.numero}'

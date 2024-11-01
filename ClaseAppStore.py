@@ -5,6 +5,7 @@ class AppStore(Aplicacion):
     aplicacionesDisponibles = {}
     #Diccionario {clave nombreAplicacion : valor clase} {Notas.nombre: Notas, Calendario.nombre:Calendario,Calculadora.nombre:Calculadora}
     def __init__(self, celular):
+        super().__init__()
         self.celular=celular
     @classmethod
     def verAplicacionesDisponibles(cls):

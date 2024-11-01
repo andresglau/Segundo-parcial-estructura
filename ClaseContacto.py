@@ -16,6 +16,6 @@ class Contacto:
             raise ValueError('No se puede comparar un contacto con otro objeto')
     
     def __str__(self):
-        return f'Nombre: {self.nombre}; Numero de telefono: {self.numTelefono}'
+        return f'\t Nombre: {self.nombre} {'\t'*2} Numero de telefono: {self.numTelefono}'
     def __repr__(self):
         return self.__str__()

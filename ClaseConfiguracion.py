@@ -5,8 +5,10 @@ class Configuracion(Aplicacion):
     nombre='Configuracion'
     icono=None
 
-    def __init__(self, celular):
+    def __init__(self, celular, torre: Torre):
+        super().__init__()
         self.celular=celular
+        self.torre = torre
 
     #activar red movil    
     def activarRedMovil(self):
@@ -31,13 +33,13 @@ class Configuracion(Aplicacion):
             raise ValueError('El celular esta apagado')
         
     #activar internet    
-    def activarInternet(self, torre:Torre):
+    def activarInternet(self):
         if not self.celular.apagado:
             if not self.celular.internet:
                 self.celular.internet = True
                 print('Se activo el internet')
-                if self.celular.numero in torre.telefonosRegistrados: #solo los celulares que estan registrados en la torre
-                    torre.entregarMensajes(self.numero) #recibe los SMS que le enviaron cuando no tenia internet
+                if self.celular.numero in self.torre.telefonosRegistrados: #solo los celulares que estan registrados en la torre
+                    self.torre.entregarMensajes(self.numero) #recibe los SMS que le enviaron cuando no tenia internet
             else:
                 raise ValueError('La internet ya esta activado')
         else:

@@ -1,15 +1,19 @@
-from ClaseCelular import Celular
+import Validaciones
+from ClaseTorre import Torre
 from ClaseEmail import Email
+from ClaseCelular import Celular
 
 #metodos comunes de menu
 def mostrarMenu(lista):
+    print()
     nuevaLista=list(map(lambda tupla: tupla[0],lista))
     for i, opcion in enumerate(nuevaLista):
         print(i,opcion)
     opcion=input('Ingrese la opcion: ')
     while not validarOpcion(opcion, lista):
         opcion=input('Ingrese la opcion: ')
-    ejecutarOpcion(opcion,lista)
+    if ejecutarOpcion(opcion,lista)==True:
+        return True
 
 def validarOpcion(opcion,lista):
     try:
@@ -23,7 +27,7 @@ def validarOpcion(opcion,lista):
     return False
      
 def ejecutarOpcion(opcion,lista):
-    lista[int(opcion)][1](*lista[int(opcion)][2])
+    return lista[int(opcion)][1](*lista[int(opcion)][2])
 
 #a diferencia de mostrarMenu, este no ejecuta la opcion sino que la devuelve
 def mostrarOpciones(lista):
@@ -35,14 +39,14 @@ def mostrarOpciones(lista):
     return int(opcion)
 
 #funciones especificas
-def salir():
+def terminar():
     print("Programa terminado")
     
 #FuncionInstanciar
-def instanciar():
-    celu = Celular(pedirNombre(), pedirModelo(),pedirVersion(),pedirMemoriaRAM(),pedirAlmacenamientoGB(),pedirNumero(), pedirCodigo(), pedirMail())
-    mostrarMenu([('Instanciar',instanciar,[]),('Operar','',[]),('Salir',salir,[])])
-
+def instanciar(torre: Torre, menuOperar):
+    celu = Celular(pedirNombre(), pedirModelo(),pedirVersion(),pedirMemoriaRAM(),pedirAlmacenamientoGB(),pedirNumero(), pedirCodigo(), pedirMail(),torre)
+    mostrarMenu([('Instanciar',instanciar,[torre]),('Operar',operar,[menuOperar]),('Terminar',terminar,[])])
+    
 def pedirNombre():
     nombre = input('Ingrese un nombre para el celular: ')
     return nombre
@@ -66,8 +70,10 @@ def pedirNumero():
     cumple=False
     while not cumple:
         numero=input('Ingrese el numero de celular: ')
-        if len(numero)!=10 or numero[:2]!='11' or numero[2]=='0' or not numero.isdigit():
-            print('numero de celular incorrecto. Debe tener el siguiente formato: 1123456789')
+        if Validaciones.validarFormatoNumTelefono(numero):
+            pass
+        elif int(numero) in Celular.numerosUso:
+            print('Numero de celular usado')
         else:
             cumple=True
     return int(numero)
@@ -92,10 +98,84 @@ def pedirMail():
             valido = True
     return mail
 
-menuBase=[('Instanciar',instanciar,[]),('Operar','',[]),('Salir',salir,[])]
+#funcion operar
+def operar(menuOperar):
+    existe=False
+    while not existe:
+        try:
+            opcion=int(input('Ingrese un numero de telefono. Ingrese 1 para volver atras: '))
+            if opcion==1 or opcion in Celular.numerosUso:
+                existe=opcion
+        except ValueError:
+            print('Debe ingresar una opcion valida')
+            #si sobra tiempo printear los telefonos disponibles
+    if existe==1:
+        mostrarMenu([('Instanciar',instanciar,[torre]),('Operar',operar,[menuOperar]),('Terminar',terminar,[])])
+    else:
+        global celularActivo #definimos esta variable global para no estar todo el tiempo pasando el celular activo como parametro
+        celularActivo=Celular.numerosUso[existe]
+        mostrarMenu(menuOperar)
+        
+def salir():
+    if not celularActivo.bloqueado: #siempre que se sale del celular, ese celular se bloquea.
+        celularActivo.bloquear()
+    mostrarMenu([('Instanciar',instanciar,[torre, menuOperar]),('Operar',operar,[menuOperar]),('Terminar',terminar,[])])
+    
+def prender(menuPrender):
+    if celularActivo.apagado: #un telefono cuando se dejo de operar no se apaga ya que sino no se podria realizar llamadas
+        celularActivo.prender()
+    mostrarMenu(menuPrender)
+    
+#funciones prender
+def apagar():
+    celularActivo.apagar()
+    mostrarMenu([('Prender', prender,[menuPrender]), ('Salir', salir,[])])
+    
+def desbloquear(menuDesbloquear):
+    i=0
+    while celularActivo.bloqueado and i<6:
+        celularActivo.desbloquear()
+        i+=1
+    if i==6:
+        print('Agoto los 6 intentos de desbloqueo')
+        mostrarMenu([('Instanciar',instanciar,[torre, menuOperar]),('Operar',operar,[menuOperar]),('Terminar',terminar,[])])
+    else:
+        mostrarMenu(menuDesbloquear)
+        
+#funciones desbloquear
+def bloquear():
+    celularActivo.bloquear()
+    prender([('Desbloquear', desbloquear,[menuDesbloquear]), ('Apagar', apagar,[]), ('Salir', salir,[])])
+    
+def abrirApp():
+    celularActivo.verAplicaciones()
+    app=input('Ingrese el nombre de la aplicacion: ')
+    if app in celularActivo.aplicaciones:
+        volver = False
+        while not volver:
+            volver = mostrarMenu(celularActivo.aplicaciones[app].opciones)
+    else:
+        print('Esa aplicacion no se encuentra en el celular')
+    mostrarMenu([('Apagar', apagar, []), ('Bloquear', bloquear, []), ('Abrir App', abrirApp, []), ('Eliminar App', eliminarApp, []), ('Salir', salir, [])])
 
-
+def eliminarApp():
+    app=input('Ingrese el nombre de la aplicacion a borrar: ')
+    try:
+        celularActivo.borrarAplicacion(app)
+    except ValueError as e:
+        print(e)
+    finally:
+        mostrarMenu([('Apagar', apagar, []), ('Bloquear', bloquear, []), ('Abrir App', abrirApp, []), ('Eliminar App', eliminarApp, []), ('Salir', salir, [])])
+    
+#instancias
+torre=Torre()
+menuDesbloquear = [('Apagar', apagar, []), ('Bloquear', bloquear, []), ('Abrir App', abrirApp, []), ('Eliminar App', eliminarApp, []), ('Salir', salir, [])]
+menuPrender=[('Desbloquear', desbloquear,[menuDesbloquear]), ('Apagar', apagar,[]), ('Salir', salir,[])]
+menuOperar=[('Prender', prender,[menuPrender]), ('Salir', salir,[])]
+menuBase=[('Instanciar',instanciar,[torre, menuOperar]),('Operar',operar,[menuOperar]),('Terminar',terminar,[])]
 
 
 #main
+Celular('Andres','iphone 15', '1', 8, 64, 1167671659, 1234,'andi@gmail.com',torre)
+Celular('Isidro', 'iphone 15', '1', 8, 64, 1156789023, 1234, 'ichi@gmail.com', torre)
 mostrarMenu(menuBase)
