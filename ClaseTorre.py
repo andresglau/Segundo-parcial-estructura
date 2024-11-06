@@ -45,7 +45,6 @@ class Torre:   #cambiar todos los "torre" a "central"
                     print(f'Celular {numTelefono} sin internet')
                     return False
                 return True
-
         else:
             print(f'Celular {numTelefono} no registrado')
             return False

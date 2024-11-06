@@ -9,6 +9,7 @@ class Llamada:
     def cortarLlamada(self):
         self.terminoLlamada = datetime.datetime.now()
         self.duracion = self.terminoLlamada - self.empezoLlamada
+        print(f'Se termino la llamada de duracion {self.duracion}')
     def __str__(self):
         #perfeccionar que es lo que muestra
         return f'Llamada de {self.numEmisor} a {self.numReceptor} de {self.duracion}'   #asi le aparece a la torre. por ahora en los telefonos tambien

@@ -18,6 +18,7 @@ class AplicacionComunicacion(Aplicacion):
         self.contactos = {}
         self.miNumero = numero
         self.torre=torre
+    
     def verListaContactos(self):
         print('Lista de contactos:')
         if self.contactos:
@@ -117,38 +118,62 @@ class Telefono(AplicacionComunicacion):
         super().__init__(numero, torre)
         self.registroDeLlamadas = deque() #cola. ordenada de anterior a reciente. append, popleft
         self.enLlamada = False #y se cambia cuando esta en llamada a la Llamada correspondiente
+        self.opciones = [('Ver contactos',self.verListaContactos,[]),
+                         ('Ver contactos en particular',self.verContactosEnParticular,[]),
+                         ('Llamar por teclado', self.llamarPorTeclado, []),
+                         ('Llamar por contacto', self.llamarContacto, []),
+                         ('Cortar llamada',self.cortarLlamada,[]),
+                         ('Ver historial llamadas', self.verHistorialLlamadas,[]),
+                         ('Volver a pantalla de inicio', self.volver, [])]
     
     #llamar por teclado       
-    def llamarPorTeclado(self,numero):
-        if self.torre.verificarEstado(self.nombre,self.miNumero) and self.torre.verificarEstado(self.nombre,numero): #verifico ambos numeros
-            self.enLlamada = Llamada(self.miNumero, numero)
-            self.torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada)
+    def llamarPorTeclado(self):
+        numero = input('Ingrese el numero al que desea llamar: ')
+        if Validaciones.validarFormatoNumTelefono(numero):
+            print('Intento llamar a un numero de telefono invalido')
+        else:
+            numero=int(numero)
+            if self.torre.verificarEstado(self.nombre,self.miNumero) and self.torre.verificarEstado(self.nombre,numero): #verifico ambos numeros
+                self.enLlamada = Llamada(self.miNumero, numero)
+                self.torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada)
+                # if self.enLlamada!=False:
+                #     cortar=input('Toque enter para cortar la llamada: ')
+                #     self.cortarLlamada()
 
     #llamar a un contacto
-    def llamarContacto(self, nombre):
-        if nombre not in self.contactos:
-            raise ValueError('Ese nombre no esta en tus contactos')
+    def llamarContacto(self):
+        try:
+            nombre = input('Ingrese el nombre del contacto que desea llamar: ')
+            if nombre not in self.contactos:
+                raise ValueError('Ese nombre no esta en tus contactos')
+        except ValueError as e:
+            print(e)
         else:
-            
             if self.torre.verificarEstado(self.nombre,self.miNumero) and self.torre.verificarEstado(self.nombre, self.contactos[nombre].numTelefono):
-                self.enLlamada = Llamada(self.miNumero, self.contactos[nombre].numTelefono)
-                self.torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada, self.torre)
+                    self.enLlamada = Llamada(self.miNumero, self.contactos[nombre].numTelefono)
+                    self.torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada)
+                    # if self.enLlamada!=False:
+                    #     cortar=input('Toque enter para cortar la llamada: ')
+                    #     self.cortarLlamada()
 
     #recibir llamada
-    def recibirLlamada(self,llamada: Llamada):       
+    def recibirLlamada(self,llamada: Llamada):
+        print(f'\n(Se esta operando el telefono: {llamada.numReceptor})')       
         if llamada.numEmisor in list(map(lambda contacto: contacto.numTelefono,self.contactos.values())):
             for nombre in self.contactos:                       #REEVER
                 if self.contactos[nombre].numTelefono==llamada.numEmisor:
                     print('Llamada de', nombre)
         else:
-            print('Llamada de', llamada.numEmisor)
+            print('Llamada entrante de', llamada.numEmisor)
         respuesta=input('Ingrese 0 para cortar, cualquier otro caracter para aceptar: ')
         # if datetime.datetime.now()-llamada.empezoLlamada > 10:
         #     aceptar = 0
         if respuesta=='0':
-            self.torre.telefonosRegistrados[llamada.numEmisor].aplicaciones['Telefono'].enLlamada=False      #COMO SIGUE LA DURACION DE LA LLAMADA
+            self.torre.telefonosRegistrados[llamada.numEmisor].aplicaciones['Telefono'].enLlamada=False #COMO SIGUE LA DURACION DE LA LLAMADA
+            print('Llamada rechazada')
         else:
             self.enLlamada=llamada
+            print('Llamada en curso')
             
     #registrar llamada en el telefono
     def registrarLlamadaTelefono(self,llamada: Llamada):
@@ -160,35 +185,42 @@ class Telefono(AplicacionComunicacion):
 
     #cortar llamada
     def cortarLlamada(self):
-        if self.enLlamada == False:
-            raise ValueError('No estas en ninguna llamada')
+        try:
+            if self.enLlamada == False:
+                raise ValueError('No estas en ninguna llamada')
+        except ValueError as e:
+            print(e)
         else:
-            llamada=self.enLlamada
-            llamada.cortarLlamada()
-            self.enLlamada=False
-            self.registrarLlamadaTelefono(llamada)
-            if self.miNumero == llamada.numEmisor:
-                self.torre.telefonosRegistrados[llamada.numReceptor].aplicaciones['Telefono'].recibirCorte(llamada)
-            else:
-                self.torre.telefonosRegistrados[llamada.numEmisor].aplicaciones['Telefono'].recibirCorte(llamada)
-            self.registrarLlamadaTorre(llamada)
+                llamada=self.enLlamada
+                llamada.cortarLlamada()
+                self.enLlamada=False
+                self.registrarLlamadaTelefono(llamada)
+                if self.miNumero == llamada.numEmisor:
+                    self.torre.telefonosRegistrados[llamada.numReceptor].aplicaciones['Telefono'].recibirCorte(llamada)
+                else:
+                    self.torre.telefonosRegistrados[llamada.numEmisor].aplicaciones['Telefono'].recibirCorte(llamada)
+                self.registrarLlamadaTorre(llamada)
             
     def recibirCorte(self,llamada: Llamada):
         self.enLlamada=False
         self.registrarLlamadaTelefono(llamada)
     
     def verHistorialLlamadas(self):
+        print('Historial de llamadas:')
         for llamada in self.registroDeLlamadas:
             print(llamada)
         
 class SMS(AplicacionComunicacion):
     nombre='SMS'
     icono=None
-
+    
     def __init__(self, numero, torre: Torre):
         super().__init__(numero, torre)
         self.misChats={}        #{numero: objeto Chat}      #VER SI NUMERO ES INT O STR
         self.chatAbierto = False
+        self.opciones = [('Ver contactos',self.verListaContactos,[]),
+                         ('Ver contactos en particular',self.verContactosEnParticular,[]),
+                         ('Volver a pantalla de inicio', self.volver, [])]
     
     def crearChat(self, numero):
         if not numero in self.torre.telefonosRegistrados or not self.miNumero in self.torre.telefonosRegistrados:
