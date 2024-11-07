@@ -15,11 +15,14 @@ class Aplicacion:
 class AplicacionComunicacion(Aplicacion):
     def __init__(self, numero: int, torre: Torre):
         super().__init__()
-        self.contactos = {}
+        self.contactos = {}     #La lista de contactos 
         self.miNumero = numero
         self.torre=torre
     
     def verListaContactos(self):
+        '''
+        Imprime la lista de contactos del celular
+        '''
         print('Lista de contactos:')
         if self.contactos:
             for nombre in list(sorted(self.contactos)):
@@ -52,6 +55,7 @@ class Contactos(AplicacionComunicacion):
                          ('Volver a pantalla de inicio', self.volver, [])]
 
     def agregarContacto(self):
+        ''
         nombre = input('Ingrese el nombre para agendar el contacto: ')
         if nombre in self.contactos:
             print('Este nombre ya existe')
@@ -128,17 +132,25 @@ class Telefono(AplicacionComunicacion):
     
     #llamar por teclado       
     def llamarPorTeclado(self):
+        '''
+        Llama a un numero de telefono mediante el teclado de la aplicacion
+        Si intenta llamar al propio celular, levanta un error
+        '''
         numero = input('Ingrese el numero al que desea llamar: ')
         if Validaciones.validarFormatoNumTelefono(numero):
             print('Intento llamar a un numero de telefono invalido')
         else:
             numero=int(numero)
-            if self.torre.verificarEstado(self.nombre,self.miNumero) and self.torre.verificarEstado(self.nombre,numero): #verifico ambos numeros
-                self.enLlamada = Llamada(self.miNumero, numero)
-                self.torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada)
-                # if self.enLlamada!=False:
-                #     cortar=input('Toque enter para cortar la llamada: ')
-                #     self.cortarLlamada()
+            try:
+                if numero==self.miNumero:
+                    raise ValueError('No te podes llamar a vos mismo')
+            except ValueError as e:
+                print(e)
+            else:
+                if self.torre.verificarEstado(self.nombre,self.miNumero) and self.torre.verificarEstado(self.nombre,numero): #verifico ambos numeros
+                    self.enLlamada = Llamada(self.miNumero, numero)
+                    self.torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada)
+
 
     #llamar a un contacto
     def llamarContacto(self):
@@ -152,9 +164,7 @@ class Telefono(AplicacionComunicacion):
             if self.torre.verificarEstado(self.nombre,self.miNumero) and self.torre.verificarEstado(self.nombre, self.contactos[nombre].numTelefono):
                     self.enLlamada = Llamada(self.miNumero, self.contactos[nombre].numTelefono)
                     self.torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada)
-                    # if self.enLlamada!=False:
-                    #     cortar=input('Toque enter para cortar la llamada: ')
-                    #     self.cortarLlamada()
+
 
     #recibir llamada
     def recibirLlamada(self,llamada: Llamada):
@@ -216,45 +226,122 @@ class SMS(AplicacionComunicacion):
     
     def __init__(self, numero, torre: Torre):
         super().__init__(numero, torre)
-        self.misChats={}        #{numero: objeto Chat}      #VER SI NUMERO ES INT O STR
-        self.chatAbierto = False
-        self.opciones = [('Ver contactos',self.verListaContactos,[]),
+        self.misChats={}                #{numero: objeto Chat}
+        self.chatAbierto=False
+        self.opciones = [
+                        ('Ver contactos',self.verListaContactos,[]),
                          ('Ver contactos en particular',self.verContactosEnParticular,[]),
-                         ('Volver a pantalla de inicio', self.volver, [])]
+                         ('Crear un chat nuevo',self.crearChat,[]),
+                         ('Abrir un chat por numero',self.abrirChatPorNumero,[]),
+                         ('Abrir un chat por nombre del contacto',self.abrirChatPorNombre,[]),
+                         ('Ver los chats',self.verChats,[]),
+                         ('Borrar un chat',self.borrarChat,[]),
+                         ('Cerrar chat',self.cerrarChat,[]),
+                         ('Enviar un mensaje al chat abierto',self.enviarMensaje,[]),
+                         ('Borrar un mensaje del chat abierto', self.borrarMensaje,[]),
+                         ('Ver chat abierto',self.verChatAbierto,[]),
+                         ('Volver a pantalla de inicio', self.volver, [])
+                         ]
     
-    def crearChat(self, numero):
-        if not numero in self.torre.telefonosRegistrados or not self.miNumero in self.torre.telefonosRegistrados:
-            raise ValueError('Hay un telefono no registrado en la central')
-        elif numero in self.misChats:
-            raise ValueError('Ese chat ya existe')
-        self.misChats[numero]=Chat(self.miNumero,numero)
-        self.torre.telefonosRegistrados[numero].aplicaciones['SMS'].misChats[self.miNumero]=self.misChats[numero]
-
-    def abrirChatPorNumero(self, numero):
-        if numero not in self.misChats:
-            print('No existe ese chat')
+    def crearChat(self):
+        numero=input('Ingrese el numero de la persona con la que desea crear el chat: ')
+        if Validaciones.validarFormatoNumTelefono(numero):
+            pass
         else:
-            self.chatAbierto = self.misChats[numero]
-        
-    def abrirChatPorNombre(self, nombre):
-        if nombre not in self.contactos:
-            raise ValueError('Ese nombre no esta en tus contactos')
-        else:
-            if self.contactos[nombre].numTelefono not in self.misChats:
-                print('No existe ese chat')
+            try:
+                numero=int(numero)
+                if not numero in self.torre.telefonosRegistrados or not self.miNumero in self.torre.telefonosRegistrados:
+                    raise ValueError('Hay un telefono no registrado en la central')
+                elif numero in self.misChats:
+                    raise ValueError('Ese chat ya existe')
+            except ValueError as e:
+                print(e)
             else:
-                self.chatAbierto = self.misChats[self.contactos[nombre].numTelefono]
-    
-    def cerrarChat(self):
-       self.chatAbierto = False
-    
-    def verChats(self):
-        for chat in list(sorted(self.misChats.values(), reverse = True)):
-            print(chat)
-            
-    def borrarChat(self, numero):
-        if numero not in self.misChats:
-            print('No existe ese chat')
+                chat=Chat(self.miNumero,numero)
+                self.misChats[numero]=chat
+                self.torre.telefonosRegistrados[numero].aplicaciones['SMS'].misChats[self.miNumero]=chat
+                print(chat,'creado')
+
+    def abrirChatPorNumero(self):
+        if self.chatAbierto==False:
+            try:
+                numero = int(input('Ingrese el numero de telefono del chat que desea abrir: '))
+            except ValueError:
+                print('No ingreso un numero')
+            else:
+                if numero not in self.misChats:
+                    print('No existe ese chat')
+                else:
+                    self.chatAbierto = self.misChats[numero]
+                    print('Se abrio el chat')
         else:
-            self.misChats.pop(numero)
-            self.torre.telefonosRegistrados[numero].aplicaciones['SMS'].misChats.pop(self.miNumero) #Aunque no suceda en la realidad, si alguien borra un chat, se elimina para ambos
+            print('Ya hay un chat abierto')
+        
+    def abrirChatPorNombre(self):
+        if self.chatAbierto==False:
+            try:
+                nombre = input('Ingrese el nombre del contacto del chat que desea abrir: ')
+                if nombre not in self.contactos:
+                    raise ValueError('Ese nombre no esta en tus contactos')
+            except ValueError as e:
+                print(e)
+            else:
+                if self.contactos[nombre].numTelefono not in self.misChats:
+                    print('No existe ese chat')
+                else:
+                    self.chatAbierto = self.misChats[self.contactos[nombre].numTelefono]
+                    print('Se abrio el chat')
+        else:
+            print('Ya hay un chat abierto')
+                
+    def cerrarChat(self):
+        self.chatAbierto = False
+        print('Se cerro el chat')
+        
+    
+    def verChats(self): #ver como hacer para printear nombre/numero
+        if self.misChats:
+            for chat in list(sorted(self.misChats.values(), reverse = True)):
+                print(chat)
+        else:
+            print('No hay chats')
+
+    def borrarChat(self):
+        numero=input('Ingrese el numero de la persona con la que desea borrar el chat: ')
+        if Validaciones.validarFormatoNumTelefono(numero):
+            pass
+        else:
+            numero=int(numero)
+            if numero not in self.misChats:
+                print('No existe ese chat')
+            elif self.chatAbierto==self.misChats[numero]:
+                print('No podes borrar el chat abierto')
+            else:
+                print(self.misChats[numero],'eliminado')
+                self.misChats.pop(numero)
+                self.torre.telefonosRegistrados[numero].aplicaciones['SMS'].misChats.pop(self.miNumero) #Aunque no suceda en la realidad, si alguien borra un chat, se elimina para ambos
+                
+    def enviarMensaje(self):
+        if not self.chatAbierto:
+            print('No hay ningun chat abierto')
+        else:
+            contenido=input('Ingrese el mensaje que desea enviar: ')
+            self.chatAbierto.enviarMensaje(contenido, self.miNumero, self.torre)
+    
+    def verChatAbierto(self):
+        if not self.chatAbierto:
+            print('No hay ningun chat abierto')
+        else:
+            self.chatAbierto.verChat()
+            
+    def borrarMensaje(self):
+        if not self.chatAbierto:
+            print('No hay ningun chat abierto')
+        else:
+            self.chatAbierto.verChat()
+            try:
+                pos=int(input('Ingrese la posicion del mensaje que desea eliminar: '))
+            except ValueError:
+                print('No ingreso un numero entero')
+            else:
+                self.chatAbierto.borrarMensaje(pos)

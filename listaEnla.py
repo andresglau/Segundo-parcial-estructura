@@ -34,9 +34,11 @@ class Lista():
     def __str__(self):
         cadena=''
         aux=self.inicio
+        cont = 0
         while aux!=None:
-            cadena+=str(aux.dato)+'\n'
+            cadena+=str(cont)+': '+str(aux.dato)+'\n'
             aux=aux.siguiente
+            cont +=1
         return cadena
         
 class ListaMensajes(Lista):
@@ -49,16 +51,26 @@ class ListaMensajes(Lista):
     def popLeft(self):
         pass
     
-    def eliminarMensaje(self, dato):
+    def eliminarMensaje(self, pos: int):
         aux = self.inicio
         if aux:
-            if aux.dato == dato:                #POR SI EL PRIMER ELEMENTO ES EL QUE QUIERO ELIMINAR
+            if pos == 0:                #POR SI EL PRIMER ELEMENTO ES EL QUE QUIERO ELIMINAR
                 self.inicio = aux.siguiente
+                print(f'Se elimino el mensaje {aux.dato}')
                 return
             else:
+                i = 1
                 while aux.siguiente != None:
-                    if aux.siguiente.dato == dato:
+                    if i == pos:
+                        print(f'Se elimino el mensaje {aux.dato}')
                         aux.siguiente = aux.siguiente.siguiente
                         return
                     aux = aux.siguiente
-        print('No se encontro ese dato')
+                    i+=1
+                if i == pos:
+                    print(f'Se elimino el mensaje {aux.dato}')
+                    #necesito que el nodo.siguiente anterior = None
+                    
+                print('Posicion fuera de rango')
+        else:
+            print('No hay mensajes')

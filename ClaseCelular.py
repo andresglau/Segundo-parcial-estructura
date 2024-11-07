@@ -7,12 +7,11 @@ from ClaseEmail import Email
 class Celular:
     
     idUnicos=set()
-    modelosPermitidos={'iphone 15','iphone 16','samsung s20'}
-    #No se pueden repetir numeros celulares
-    numerosUso=dict()
+    # modelosPermitidos={'iphone 15','iphone 16','samsung s20'} YA ESTA EN EL MENU
+    numerosUso = dict() #No se pueden repetir numeros celulares
     
     def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int, codigo: int, mail: str, torre: Torre):
-        #instanciar
+        '''Se instancia el celular con sus respectivos atributos y modificaciones a los atributos de la clase Celular'''
         if self.idUnicos:
             self.id=max(self.idUnicos)+1
         else:
@@ -27,7 +26,7 @@ class Celular:
         Celular.numerosUso[numero]=self
         self.apagado = True
         self.bloqueado = True
-        #la funcion de red movil es permitir realizar una llamada.
+        #La funcion de red movil es permitir realizar una llamada.
         self.redMovil=False
         self.internet=False
         self.bluetooth=False
@@ -36,15 +35,24 @@ class Celular:
         self.aplicaciones={Contactos.nombre:Contactos(self.numero,torre), Telefono.nombre:Telefono(self.numero,torre),
                            SMS.nombre:SMS(self.numero, torre), AppStore.nombre: AppStore(self), 
                            Configuracion.nombre:Configuracion(self, torre), Email.nombre:Email(mail)}
-        #diccionario de aplicaciones descargadas. Por defecto vienen estas, y no se pueden borrar.
+        #Diccionario de aplicaciones descargadas. Por defecto vienen estas, y no se pueden borrar.
         
-        #linkear contactos con telefono y sms
+        '''
+        Abajo se sincronizan los contactos de las Apps de Comunicacion. Por default, una app de comunicacion tiene
+        una lista de contactos. Como estas aplicaciones estan el mismo celular, el celular al crearse sincroniza las
+        respectivas listas de contacto
+        '''
         self.aplicaciones['Telefono'].contactos = self.aplicaciones['Contactos'].contactos
         self.aplicaciones['SMS'].contactos = self.aplicaciones['Contactos'].contactos
+        
         self.appActiva = None
     
     #prender el telefono si esta apagado    
     def prender(self):
+        '''
+        El celular cambia su estado de apagado.
+        Si esta prendido, no tiene logica prenderlo, por ende, levanta un error
+        '''
         if self.apagado:
             self.apagado = False
             print('Se prendio el celular')

@@ -10,20 +10,22 @@ class Chat:
         self.mensajes=ListaMensajes()
         self.fechaUltimoMensaje = datetime.datetime.now()
         
-    def enviarMensaje(self, contenido, numero, torre: Torre):
-        miNumero = [self.numeros[1] if self.numeros[0]==numero else self.numeros[0]]
-        mensaje = Mensaje(contenido,miNumero[0], numero)
+    def enviarMensaje(self, contenido, miNumero, torre: Torre):
+        otroNumero = [self.numeros[1] if self.numeros[0]==miNumero else self.numeros[0]]
+        mensaje = Mensaje(contenido, miNumero, otroNumero[0])
         self.mensajes.agregarFinal(Nodo(mensaje))
         print('Mensaje enviado')
         self.fechaUltimoMensaje = datetime.datetime.now()
         torre.recibirMensaje(mensaje)
-    
-    #def borrarMensaje(self):       #IMPORTANTE
 
-    #def verEstadoUltimoMensaje(self):      PARA VER SI EL ULTIMO
+    def borrarMensaje(self, pos):
+        self.mensajes.eliminarMensaje(pos)
     
     def verChat(self):
-        print(self.mensajes)
+        if self.mensajes.esVacia():
+            print('No hay mensajes')
+        else:
+            print(self.mensajes)
     
     def __lt__(self, other):
         return self.fechaUltimoMensaje<other.fechaUltimoMensaje
@@ -33,5 +35,3 @@ class Chat:
 
     def __repr__(self):
         return self.__str__()
-    
-    
