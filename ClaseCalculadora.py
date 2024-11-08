@@ -1,46 +1,37 @@
 from ClaseAplicacion import Aplicacion
+
 class Calculadora(Aplicacion):
     nombre='Calculadora'
     icono=None
+    
     def __init__(self):
-      self.ultimoValor=None 
+        super().__init__()
+        self.opciones=[('Operar',self.operar,[]),
+                       ('Volver a pantalla de inicio', self.volver, [])]
         
-    def sumar(self):
-        if not self.ultimoValor:
-            numero1=input('Numero 1: ')
-        else:
-            numero1=self.ultimoValor
-            
-        numero2=input('Numero 2: ')
-        return numero1+numero2
-
-        
-    def multiplicar(self):
-        if not self.ultimoValor:
-            numero1=input('Numero 1: ')
-        else:
-            numero1=self.ultimoValor
-            
-        numero2=input('Numero 2: ')
-        return numero1*numero2
-
-    def resta(self):
-        if not self.ultimoValor:
-            numero1=input('Numero 1: ')
-        else:
-            numero1=self.ultimoValor
-            
-        numero2=input('Numero 2: ')
-        return numero1-numero2
-    
-    def division(self):
-        if not self.ultimoValor:
-            numero1=input('Numero 1: ')
-        else:
-            numero1=self.ultimoValor
-            
-        numero2=input('Numero 2: ')
-        return numero1/numero2
-    
-    
-    
+    def operar(self):
+        while True:
+            try:
+                num1 = float(input("Ingresa el primer numero: "))
+                num2 = float(input("Ingresa el segundo numero: "))
+                break
+            except ValueError:
+                print('No ingreso un numero')
+        operador=False
+        while not operador:
+            operador=input('Ingrese el operador (+ - * /): ')
+            if operador not in '+-*/' or len(operador)!=1:
+                operador=False
+        if operador=='+':
+            print(f'{num1} + {num2} = {num1+num2}')
+        elif operador=='-':
+            print(f'{num1} - {num2} = {num1-num2}')
+        elif operador=='*':
+            print(f'{num1} * {num2} = {num1*num2}')
+        elif operador=='/':
+            try:
+                if num2==0:
+                    raise ValueError('No se puede dividir por 0')
+                print(f'{num1} / {num2} = {num1/num2}')
+            except ValueError as e:
+                print(e)

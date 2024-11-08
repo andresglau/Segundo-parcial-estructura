@@ -4,8 +4,8 @@ class Torre:   #cambiar todos los "torre" a "central"
     
     def __init__(self):
         self.telefonosRegistrados={} #{numero,objeto}
-        self.registroDeLlamadas=deque()     #O lista secuencial?
-        self.registroDeMensajes=deque()
+        self.registroDeLlamadas=deque()     #Cola
+        self.registroDeMensajes=deque()     #Cola       Porque quiero ver primero los mensajes mas viejos, los que llegaron primeros
         self.mensajesPendientes={} #diccionaro {numero: cola de mensajes pendientes que se entregan cuando se conecta a internet}
     
     #agregar telefono

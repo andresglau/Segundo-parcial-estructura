@@ -1,3 +1,4 @@
+from exportadorCSV import *
 import Validaciones
 from ClaseTorre import Torre
 from ClaseEmail import Email
@@ -170,35 +171,49 @@ def eliminarApp():
     finally:
         mostrarMenu([('Apagar', apagar, []), ('Bloquear', bloquear, []), ('Abrir App', abrirApp, []), ('Eliminar App', eliminarApp, []), ('Salir', salir, [])])
     
+
+# #main
+# andi=Celular('Andi','iphone 15', '1', 8, 64, 1167671659, 1234,'andi@gmail.com',torre)
+# ichi=Celular('Ichi', 'iphone 15', '1', 8, 64, 1156789023, 1234, 'ichi@gmail.com', torre)
+# fede=Celular('Fede', 'iphone 15', '1', 8, 64, 1198765432, 1234, 'fede@gmail.com', torre)
+# manu=Celular('Manu', 'iphone 15', '1', 8, 64, 1123455432, 1234, 'manu@gmail.com', torre)
+
+# andi.aplicaciones['Contactos'].contactos={ichi.nombre:Contacto(ichi.nombre,ichi.numero),fede.nombre:Contacto(fede.nombre,fede.numero),manu.nombre:Contacto(manu.nombre,manu.numero)}
+# andi.aplicaciones['Telefono'].contactos = andi.aplicaciones['Contactos'].contactos
+# andi.aplicaciones['SMS'].contactos = andi.aplicaciones['Contactos'].contactos
+# ichi.aplicaciones['Contactos'].contactos={'andi':Contacto('andi',1167671659), 'fede':Contacto('fede',1198765432),'manu':Contacto('manu',1123455432)}
+# ichi.aplicaciones['Telefono'].contactos = ichi.aplicaciones['Contactos'].contactos
+# ichi.aplicaciones['SMS'].contactos = ichi.aplicaciones['Contactos'].contactos
+
+
+# for celular in Celular.numerosUso.values():
+#     torre.agregarTelefono(celular)
+#     celular.apagado=False
+#     celular.redMovil=True
+#     celular.internet=True
+
+
 #instancias
-torre=Torre()
-menuDesbloquear = [('Apagar', apagar, []), ('Bloquear', bloquear, []), ('Abrir App', abrirApp, []), ('Eliminar App', eliminarApp, []), ('Salir', salir, [])]
-menuPrender=[('Desbloquear', desbloquear,[menuDesbloquear]), ('Apagar', apagar,[]), ('Salir', salir,[])]
-menuOperar=[('Prender', prender,[menuPrender]), ('Salir', salir,[])]
-menuBase=[('Instanciar',instanciar,[torre, menuOperar]),('Operar',operar,[menuOperar]),('Terminar',terminar,[])]
-
-
-#main
-andi=Celular('Andi','iphone 15', '1', 8, 64, 1167671659, 1234,'andi@gmail.com',torre)
-ichi=Celular('Ichi', 'iphone 15', '1', 8, 64, 1156789023, 1234, 'ichi@gmail.com', torre)
-fede=Celular('Fede', 'iphone 15', '1', 8, 64, 1198765432, 1234, 'fede@gmail.com', torre)
-manu=Celular('Manu', 'iphone 15', '1', 8, 64, 1123455432, 1234, 'manu@gmail.com', torre)
-
-andi.aplicaciones['Contactos'].contactos={ichi.nombre:Contacto(ichi.nombre,ichi.numero),fede.nombre:Contacto(fede.nombre,fede.numero),manu.nombre:Contacto(manu.nombre,manu.numero)}
-andi.aplicaciones['Telefono'].contactos = andi.aplicaciones['Contactos'].contactos
-andi.aplicaciones['SMS'].contactos = andi.aplicaciones['Contactos'].contactos
-ichi.aplicaciones['Contactos'].contactos={'andi':Contacto('andi',1167671659), 'fede':Contacto('fede',1198765432),'manu':Contacto('manu',1123455432)}
-ichi.aplicaciones['Telefono'].contactos = ichi.aplicaciones['Contactos'].contactos
-ichi.aplicaciones['SMS'].contactos = ichi.aplicaciones['Contactos'].contactos
-
-
-for celular in Celular.numerosUso.values():
-    torre.agregarTelefono(celular)
-    celular.apagado=False
-    celular.redMovil=True
-    celular.internet=True
-
 try:
-    mostrarMenu(menuBase)
-except BaseException as e:
-    print(f'Error no esperado. Error: {e}')
+    torre=Torre()
+    menuDesbloquear = [('Apagar', apagar, []), ('Bloquear', bloquear, []), ('Abrir App', abrirApp, []), ('Eliminar App', eliminarApp, []), ('Salir', salir, [])]
+    menuPrender=[('Desbloquear', desbloquear,[menuDesbloquear]), ('Apagar', apagar,[]), ('Salir', salir,[])]
+    menuOperar=[('Prender', prender,[menuPrender]), ('Salir', salir,[])]
+    menuBase=[('Instanciar',instanciar,[torre, menuOperar]),('Operar',operar,[menuOperar]),('Terminar',terminar,[])]
+
+    archivo = 'MemoriaCelulares.csv'
+    lectorCSV(archivo, torre)
+
+    for celular in Celular.numerosUso.values():
+        celular.apagado=False
+        celular.redMovil=True
+        celular.internet=True
+
+    try:
+        mostrarMenu(menuBase)
+    except BaseException as e:
+        print(f'Error no esperado. Error: {e}')
+
+    sobreescribirCSV(archivo)
+except:
+    print('Error grave. Comunicarse.')

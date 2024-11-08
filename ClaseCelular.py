@@ -43,6 +43,12 @@ class Celular:
         '''
         self.aplicaciones['Telefono'].contactos = self.aplicaciones['Contactos'].contactos
         self.aplicaciones['SMS'].contactos = self.aplicaciones['Contactos'].contactos
+        '''
+        El telefono se da de alta en la torre. Asumimos que en nuestra forma de interactuar con el programa,
+        un telefono simepre va a estar en la torre, aunque no suceda asi en la realidad. De igual manera,
+        existe el metodo dar de baja a un celular en la torre
+        '''
+        torre.agregarTelefono(self)
     
     #prender el telefono si esta apagado    
     def prender(self):
@@ -145,6 +151,30 @@ class Celular:
         print('Aplicaciones en el celular:')
         for nombre in self.aplicaciones:
             print('\t'+nombre)
+    
+    def get_nombre(self):
+        return self.nombre
+    
+    def get_modelo(self):
+        return self.modelo
+    
+    def get_version(self):
+        return self.version
+
+    def get_memoriaRAM(self):
+        return self.memoriaRAM
+
+    def get_almacenamiento(self):
+        return self.almacenamiento
+
+    def get_numero(self):
+        return self.numero
+
+    def get_codigo(self):
+        return self.codigo
+
+    def get_mail(self):
+        return self.aplicaciones['Email'].miMail
     
     def __str__(self):
         return f'El celular de {self.nombre} modelo {self.modelo} tiene numero de celular {self.numero}'

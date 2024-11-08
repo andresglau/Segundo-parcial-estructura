@@ -15,7 +15,7 @@ class Aplicacion:
 class AplicacionComunicacion(Aplicacion):
     def __init__(self, numero: int, torre: Torre):
         super().__init__()
-        self.contactos = {}     #La lista de contactos 
+        self.contactos = {}    #La lista de contactos 
         self.miNumero = numero
         self.torre=torre
     

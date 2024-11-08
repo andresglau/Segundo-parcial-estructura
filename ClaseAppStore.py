@@ -1,9 +1,12 @@
 from ClaseAplicacion import Aplicacion
+from ClaseNotas import Notas
+from ClaseCalculadora import Calculadora
+
 class AppStore(Aplicacion):
     nombre = 'App Store'
     icono = None
-    aplicacionesDisponibles = {}
-    #Diccionario {clave nombreAplicacion : valor clase} {Notas.nombre: Notas, Calendario.nombre:Calendario,Calculadora.nombre:Calculadora}
+    aplicacionesDisponibles = {Notas.nombre: Notas, Calculadora.nombre:Calculadora}
+    #Diccionario {clave nombreAplicacion : valor clase} {Calendario.nombre:Calendario}
     def __init__(self, celular):
         super().__init__()
         self.celular=celular
