@@ -21,7 +21,7 @@ class AplicacionComunicacion(Aplicacion):
     
     def verListaContactos(self):
         '''
-        Imprime la lista de contactos del celular
+        Imprime la lista de contactos del celular ordenada alfabeticamente
         '''
         print('Lista de contactos:')
         if self.contactos:
@@ -31,6 +31,9 @@ class AplicacionComunicacion(Aplicacion):
             print('No hay contactos')
             
     def verContactosEnParticular(self):
+        '''
+        Imprime alfabeticamente los contactos que contienen la subcadena ingresada
+        '''
         subcadena=input('Ingrese una subcadena para filtrar contactos: ')
         contactosAMostrar=[]
         for nombreAgendado in self.contactos:
@@ -55,7 +58,11 @@ class Contactos(AplicacionComunicacion):
                          ('Volver a pantalla de inicio', self.volver, [])]
 
     def agregarContacto(self):
-        ''
+        '''
+        Agrega un contacto en base a los datos que le pase el usuario.
+        Los nombres con los que agenda los contactos son unicos
+        Ademas el numero de telefono que agenda en ese contacto debe ser valido y no debe estar agendado
+        '''
         nombre = input('Ingrese el nombre para agendar el contacto: ')
         if nombre in self.contactos:
             print('Este nombre ya existe')
@@ -68,8 +75,12 @@ class Contactos(AplicacionComunicacion):
             else:
                 self.contactos[nombre]=Contacto(nombre,numTelefono)
     
-    #si no vas a querer cambiar ambas cosas, pasar None en el parametro indicado.
     def actualizarContacto(self):
+        '''
+        Pide los datos a cambiar de un contacto.
+        Puede cambiar nombre, numero de telefono o los dos
+        Si no cambia ninguno o intenta cambiar un contacto que no esta agendado, lanza un error
+        '''
         try:
             nombreOriginal=input('Ingrese el nombre del contacto a modificar: ')
             if nombreOriginal not in self.contactos:
@@ -103,6 +114,9 @@ class Contactos(AplicacionComunicacion):
             print(e)
                 
     def eliminarContacto(self):
+        '''
+        Elimina un contacto.
+        '''
         try:
             nombre=input('Ingrese el nombre del contacto a eliminar: ')
             if nombre not in self.contactos:
@@ -130,10 +144,9 @@ class Telefono(AplicacionComunicacion):
                          ('Ver historial llamadas', self.verHistorialLlamadas,[]),
                          ('Volver a pantalla de inicio', self.volver, [])]
     
-    #llamar por teclado       
     def llamarPorTeclado(self):
         '''
-        Llama a un numero de telefono mediante el teclado de la aplicacion
+        Llama a un numero de telefono mediante el teclado de la aplicacion, o sea marcando los numeros del celular a llamar.
         Si intenta llamar al propio celular, levanta un error
         '''
         numero = input('Ingrese el numero al que desea llamar: ')
@@ -151,9 +164,12 @@ class Telefono(AplicacionComunicacion):
                     self.enLlamada = Llamada(self.miNumero, numero)
                     self.torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada)
 
-
-    #llamar a un contacto
     def llamarContacto(self):
+        '''
+        Llama a un numero de telefono mediante el nombre con el que lo tiene agendado como contacto.
+        Si intenta llamar a un nombre que no esta en los contactos, levanta error ya que por nombre de contacto solo
+        se puede llamar a los que efectivamente son contactos
+        '''
         try:
             nombre = input('Ingrese el nombre del contacto que desea llamar: ')
             if nombre not in self.contactos:
@@ -165,9 +181,10 @@ class Telefono(AplicacionComunicacion):
                     self.enLlamada = Llamada(self.miNumero, self.contactos[nombre].numTelefono)
                     self.torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada)
 
-
-    #recibir llamada
     def recibirLlamada(self,llamada: Llamada):
+        '''
+        Recibe una llamada.
+        '''
         print(f'\n(Se esta operando el telefono: {llamada.numReceptor})')       
         if llamada.numEmisor in list(map(lambda contacto: contacto.numTelefono,self.contactos.values())):
             for nombre in self.contactos:                       #REEVER

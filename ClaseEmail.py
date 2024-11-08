@@ -64,7 +64,10 @@ class Email(Aplicacion):
                 noLeidos+=str(indice)+': '+str(mail)+'\n'
             else:
                 leidos+=str(indice)+': '+str(mail)+'\n'
-        print(f'Mails no leidos:\n{noLeidos}Mails leidos:\n{leidos}')
+        if noLeidos and leidos:
+            print('No hay mails todavia')
+        else:
+            print(f'Mails no leidos:\n{noLeidos}Mails leidos:\n{leidos}')
         
     def abrirMail(self):
         pos = input('Ingrese la posicion del mail en la bandeja de entrada: ')

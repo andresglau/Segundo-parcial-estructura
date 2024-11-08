@@ -160,9 +160,8 @@ def abrirApp():
     mostrarMenu([('Apagar', apagar, []), ('Bloquear', bloquear, []), ('Abrir App', abrirApp, []), ('Eliminar App', eliminarApp, []), ('Salir', salir, [])])
 
 def eliminarApp():
-    app=input('Ingrese el nombre de la aplicacion a borrar: ')
     try:
-        celularActivo.borrarAplicacion(app)
+        celularActivo.borrarAplicacion()
     except ValueError as e:
         print(e)
     finally:

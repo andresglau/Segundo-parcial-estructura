@@ -9,8 +9,7 @@ class Configuracion(Aplicacion):
         super().__init__()
         self.celular=celular
         self.torre = torre
-        self.opciones = [
-                         ('Activar red movil', self.activarRedMovil, []),
+        self.opciones = [('Activar red movil', self.activarRedMovil, []),
                          ('Desactivar red movil',self.desactivarRedMovil,[]),
                          ('Activar internet', self.activarInternet, []),
                          ('Desactivar internet', self.desactivarInternet,[]),

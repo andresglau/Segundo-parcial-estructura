@@ -17,12 +17,12 @@ class Celular:
         else:
             self.id=1000
         self.idUnicos.add(self.id)
-        self.nombre=nombre
-        self.modelo=modelo
+        self.nombre = nombre
+        self.modelo = modelo
         self.version = version
         self.memoriaRAM = memoriaRAM
-        self.almacenamiento=almacenamiento
-        self.numero=numero
+        self.almacenamiento = almacenamiento
+        self.numero = numero
         Celular.numerosUso[numero]=self
         self.apagado = True
         self.bloqueado = True
@@ -36,7 +36,6 @@ class Celular:
                            SMS.nombre:SMS(self.numero, torre), AppStore.nombre: AppStore(self), 
                            Configuracion.nombre:Configuracion(self, torre), Email.nombre:Email(mail)}
         #Diccionario de aplicaciones descargadas. Por defecto vienen estas, y no se pueden borrar.
-        
         '''
         Abajo se sincronizan los contactos de las Apps de Comunicacion. Por default, una app de comunicacion tiene
         una lista de contactos. Como estas aplicaciones estan el mismo celular, el celular al crearse sincroniza las
@@ -44,7 +43,6 @@ class Celular:
         '''
         self.aplicaciones['Telefono'].contactos = self.aplicaciones['Contactos'].contactos
         self.aplicaciones['SMS'].contactos = self.aplicaciones['Contactos'].contactos
-        
         self.appActiva = None
     
     #prender el telefono si esta apagado    
@@ -61,13 +59,19 @@ class Celular:
     
     #prender el telefono si esta prendido    
     def apagar(self):
+        '''
+        El celular cambia su estado de prendido.
+        Cuando se apaga el celular, en caso de tener alguna de estas funcionalidades activadas, se bloquea,
+        desactiva el internet y desactiva la red movil
+        Si esta apagado, levanta un error
+        '''
         if not self.apagado:
             if not self.bloqueado:
                 self.bloquear()
             if self.internet:
-                self.desactivarInternet()
+                self.aplicaciones['Configuracion'].desactivarInternet()
             if self.redMovil:
-                self.desactivarRedMovil()
+                self.aplicaciones['Configuracion'].desactivarRedMovil()
             self.apagado = True
             print('Se apago el celular')
         else:
@@ -75,6 +79,10 @@ class Celular:
         
     #desbloquear el telefono si esta bloqueado    
     def desbloquear(self):
+        '''
+        Desbloquea el celular pero solo si ingreso la clave correcta.
+        Si fallo en la clave muestra un mensaje, pero si el telefono ya esta desbloqueado o apagado, levanta un error
+        '''
         try:
             codigo=int(input('Ingrese el codigo de desbloqueo: '))
         except ValueError:
@@ -97,6 +105,10 @@ class Celular:
     
     #bloquear el telefono si esta desblqueado        
     def bloquear(self):
+        '''
+        Bloquea el celular.
+        Si el telefono ya esta bloqueado o apagado, levanta un error
+        '''
         if not self.apagado:
             if not self.bloqueado:
                 self.bloqueado = True
@@ -107,6 +119,10 @@ class Celular:
             raise ValueError('El celular esta apagado')
         
     def abrirApp(self, nombre):
+        '''
+        Abre una app.
+        Es un metodo mas teorico que practico
+        '''
         if self.appActiva != None:
             raise ValueError('Todavia esta en otra aplicacion')
         if nombre not in self.aplicaciones:
@@ -116,9 +132,19 @@ class Celular:
             # self.aplicaciones[nombre].mostrarMenu()
     
     def cerrarApp(self):
+        '''
+        Cierra la app que esta abierta.
+        Si no hay app abierta no hace nada
+        '''
         self.appActiva = None
 
-    def borrarAplicacion(self,nombreApp):        
+    def borrarAplicacion(self):
+        '''
+        Borra una aplicacion que le ingrese el usuario.
+        Si la aplicacion no esta descargada, levanta un error
+        Si la aplicacion viene con el celular, muestra un mensaje de que no puede eliminarse
+        '''
+        nombreApp=input('Ingrese el nombre de la aplicacion a borrar: ')
         if nombreApp not in self.aplicaciones:
             raise ValueError('Esa aplicacion no se puede borrar porque no esta descargada')
         elif nombreApp not in AppStore.aplicacionesDisponibles:
@@ -127,7 +153,10 @@ class Celular:
             self.aplicaciones.pop(nombreApp)
             print(f'Se elimino la aplicacion {nombreApp}') #creo que asi hace lo mismo en una linea print(f'Se elimino la aplicacion {self.aplicaciones.pop(nombreApp)}')
 
-    def verAplicaciones(self): #hacer un ver pantalla
+    def verAplicaciones(self):
+        '''
+        Muestra la pantalla del celular con las aplicaciones del mismo
+        '''
         print('Aplicaciones en el celular:')
         for nombre in self.aplicaciones:
             print('\t'+nombre)
