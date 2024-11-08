@@ -62,15 +62,11 @@ class ListaMensajes(Lista):
                 i = 1
                 while aux.siguiente != None:
                     if i == pos:
-                        print(f'Se elimino el mensaje {aux.dato}')
+                        print(f'Se elimino el mensaje {aux.siguiente.dato}')
                         aux.siguiente = aux.siguiente.siguiente
                         return
                     aux = aux.siguiente
                     i+=1
-                if i == pos:
-                    print(f'Se elimino el mensaje {aux.dato}')
-                    #necesito que el nodo.siguiente anterior = None
-                    
                 print('Posicion fuera de rango')
         else:
             print('No hay mensajes')

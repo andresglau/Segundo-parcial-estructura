@@ -57,16 +57,14 @@ class Email(Aplicacion):
             print(indice,': ', mail, sep='')
             
     def verBandejaEntradaPorNoLeido(self):
-        noLeidos=''
-        leidos=''
-        for indice, mail in enumerate(self.bandejaEntrada):
-            if mail in self.noLeidos:
-                noLeidos+=str(indice)+': '+str(mail)+'\n'
-            else:
-                leidos+=str(indice)+': '+str(mail)+'\n'
-        if noLeidos and leidos:
-            print('No hay mails todavia')
-        else:
+        if not self.bandejaVacia():
+            noLeidos=''
+            leidos=''
+            for indice, mail in enumerate(self.bandejaEntrada):
+                if mail in self.noLeidos:
+                    noLeidos+=str(indice)+': '+str(mail)+'\n'
+                else:
+                    leidos+=str(indice)+': '+str(mail)+'\n'
             print(f'Mails no leidos:\n{noLeidos}Mails leidos:\n{leidos}')
         
     def abrirMail(self):
@@ -81,8 +79,6 @@ class Email(Aplicacion):
                     self.noLeidos.discard(self.bandejaEntrada[pos]) #marca como leido el mail. Si ya esta leido, no tira error.
                 else:
                     print('Posicion fuera de rango')
-            else:
-                print('No hay mails en la bandeja')
         
     def marcarComoNoLeido(self):
         pos = input('Ingrese la posicion del mail a marcar como no leido en la bandeja de entrada: ')
@@ -95,8 +91,6 @@ class Email(Aplicacion):
                     self.noLeidos.add(self.bandejaEntrada[pos]) #si ya estaba como no leido no pasa nada
                 else:
                     print('Posicion fuera de rango')
-            else:
-                print('No hay mails en la bandeja')
                 
     def eliminar(self): #solamente lo elimina de mi bandeja de entrada. De los enviados asumimos que no se puede borrar.
         pos = input('Ingrese la posicion del mail a eliminar en la bandeja de entrada: ')
@@ -110,8 +104,6 @@ class Email(Aplicacion):
                     print(f'Se elimino: {self.bandejaEntrada[pos]}')
                 else:
                     print('Posicion fuera de rango')
-            else:
-                print('No hay mails en la bandeja')
                 
     def verBandejaEnviado(self):
         print('Bandeja de enviados:')

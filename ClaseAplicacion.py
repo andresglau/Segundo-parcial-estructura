@@ -177,6 +177,7 @@ class Telefono(AplicacionComunicacion):
         except ValueError as e:
             print(e)
         else:
+            #si yo me agendo a mi mismo y me llamo pasa algo rarisimo
             if self.torre.verificarEstado(self.nombre,self.miNumero) and self.torre.verificarEstado(self.nombre, self.contactos[nombre].numTelefono):
                     self.enLlamada = Llamada(self.miNumero, self.contactos[nombre].numTelefono)
                     self.torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada)
@@ -311,9 +312,12 @@ class SMS(AplicacionComunicacion):
         else:
             print('Ya hay un chat abierto')
                 
-    def cerrarChat(self):
-        self.chatAbierto = False
-        print('Se cerro el chat')
+    def cerrarChat(self): #cuando salgo de mensajes no se deberia cerrar el chat?
+        if self.chatAbierto==False:
+            print('No hay un chat abierto')
+        else:
+            self.chatAbierto = False
+            print('Se cerro el chat')
         
     
     def verChats(self): #ver como hacer para printear nombre/numero
@@ -345,13 +349,13 @@ class SMS(AplicacionComunicacion):
             contenido=input('Ingrese el mensaje que desea enviar: ')
             self.chatAbierto.enviarMensaje(contenido, self.miNumero, self.torre)
     
-    def verChatAbierto(self):
+    def verChatAbierto(self): #si no tengo wifi me aparecen los mensajes
         if not self.chatAbierto:
             print('No hay ningun chat abierto')
         else:
             self.chatAbierto.verChat()
             
-    def borrarMensaje(self):
+    def borrarMensaje(self): #si borro un mensaje cuando no hay mensajes funciona mal, ademas se pueden borrar los mensajes del otro
         if not self.chatAbierto:
             print('No hay ningun chat abierto')
         else:
