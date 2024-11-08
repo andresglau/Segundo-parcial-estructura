@@ -152,9 +152,12 @@ def abrirApp():
     celularActivo.verAplicaciones()
     app=input('Ingrese el nombre de la aplicacion: ')
     if app in celularActivo.aplicaciones:
-        volver = False
-        while not volver:
-            volver = mostrarMenu(celularActivo.aplicaciones[app].opciones)
+        if app=='SMS' and not celularActivo.internet:
+            print('No se puede acceder a SMS sin internet')
+        else:
+            volver = False
+            while not volver:
+                volver = mostrarMenu(celularActivo.aplicaciones[app].opciones)
     else:
         print('Esa aplicacion no se encuentra en el celular')
     mostrarMenu([('Apagar', apagar, []), ('Bloquear', bloquear, []), ('Abrir App', abrirApp, []), ('Eliminar App', eliminarApp, []), ('Salir', salir, [])])

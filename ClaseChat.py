@@ -18,8 +18,8 @@ class Chat:
         self.fechaUltimoMensaje = datetime.datetime.now()
         torre.recibirMensaje(mensaje)
 
-    def borrarMensaje(self, pos):
-        self.mensajes.eliminarMensaje(pos)
+    def borrarMensaje(self, pos, miNumero):
+        self.mensajes.eliminarMensaje(pos, miNumero)
     
     def verChat(self):
         if self.mensajes.esVacia():

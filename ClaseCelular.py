@@ -43,7 +43,6 @@ class Celular:
         '''
         self.aplicaciones['Telefono'].contactos = self.aplicaciones['Contactos'].contactos
         self.aplicaciones['SMS'].contactos = self.aplicaciones['Contactos'].contactos
-        self.appActiva = None
     
     #prender el telefono si esta apagado    
     def prender(self):
@@ -69,9 +68,15 @@ class Celular:
             if not self.bloqueado:
                 self.bloquear()
             if self.internet:
-                self.aplicaciones['Configuracion'].desactivarInternet()
+                self.internet = False
             if self.redMovil:
-                self.aplicaciones['Configuracion'].desactivarRedMovil()
+                self.redMovil = False
+            if self.bluetooth:
+                self.bluetooth = False
+            if self.modoAvion:
+                self.modoAvion = False
+            if self.aplicaciones['Telefono'].enLlamada!=False:
+                self.aplicaciones['Telefono'].cortarLlamada()
             self.apagado = True
             print('Se apago el celular')
         else:
@@ -117,26 +122,6 @@ class Celular:
                 raise ValueError('El telefono ya esta bloqueado')
         else:
             raise ValueError('El celular esta apagado')
-        
-    def abrirApp(self, nombre):
-        '''
-        Abre una app.
-        Es un metodo mas teorico que practico
-        '''
-        if self.appActiva != None:
-            raise ValueError('Todavia esta en otra aplicacion')
-        if nombre not in self.aplicaciones:
-            raise ValueError('No tenes descargada esa App')
-        else:
-            self.appActiva = self.aplicaciones[nombre]
-            # self.aplicaciones[nombre].mostrarMenu()
-    
-    def cerrarApp(self):
-        '''
-        Cierra la app que esta abierta.
-        Si no hay app abierta no hace nada
-        '''
-        self.appActiva = None
 
     def borrarAplicacion(self):
         '''

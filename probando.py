@@ -1,8 +1,11 @@
 from collections import deque
+from ClaseContacto import Contacto
 # from ClaseContacto import Contacto
 # from datetime import datetime
 # from ClaseChat import *
 
+data = {'Pedro': Contacto('Pedro', 1122435566), 'Andi': Contacto('Andi', 1122334455)}
+next((item.numTelefono for item in data if item.numTelefono == 1122435566), None)
 
 class Contacto:
     def __init__(self, nombre, numTelefono = None):

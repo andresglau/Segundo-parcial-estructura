@@ -9,154 +9,91 @@ class Configuracion(Aplicacion):
         super().__init__()
         self.celular=celular
         self.torre = torre
-        self.opciones = [('Activar red movil', self.activarRedMovil, []),
-                         ('Desactivar red movil',self.desactivarRedMovil,[]),
-                         ('Activar internet', self.activarInternet, []),
-                         ('Desactivar internet', self.desactivarInternet,[]),
-                         ('Activar Bluetooth', self.activarBluetooth, []),
-                         ('Desactivar Bluetooth', self.desactivarBluetooth,[]),
-                         ('Activar modo avion', self.activarModoAvion, []),
-                         ('Desactivar modo avion', self.desactivarModoAvion, []),
+        self.opciones = [('Activar red movil', self.activar, ['red movil']),
+                         ('Desactivar red movil',self.desactivar,['red movil']),
+                         ('Activar internet', self.activar, ['internet']),
+                         ('Desactivar internet', self.desactivar,['internet']),
+                         ('Activar Bluetooth', self.activar, ['bluetooth']),
+                         ('Desactivar Bluetooth', self.desactivar,['bluetooth']),
+                         ('Activar modo avion', self.activar, ['modo avion']),
+                         ('Desactivar modo avion', self.desactivar, ['modo avion']),
                          ('Cambiar codigo de desbloqueo', self.cambiarCodigo,[]),
                          ('Cambiar nombre del telefono', self.cambiarNombre, []),
                          ('Volver a pantalla de inicio', self.volver, [])]
-        
-    #activar red movil    
-    def activarRedMovil(self):
+    def activar(self, nombre: str):
         '''
-        Activa la Red Movil.
-        Si ya esta activado tira error, porque no tiene sentido activar algo activo
+        Activa la funcionalidad que se le pasa como parametro.
+        Antes que nada chequea que este prendido el celular
+        Para poder activar Red Movil, Modo Avion debe estar desactivado. Si se activa Modo Avion, se desactiva la Red Movil
+        Cuando se activa el Internet, se entregan los mensajes que estaba reteniendo la Torre Central
         '''
         try:
             if not self.celular.apagado: #ver si hace falta verificar esto en todos los metodos de activar/desactivar
-                if not self.celular.redMovil:
-                    self.celular.redMovil = True
-                    print('Se activo la red movil')
-                else:
-                    raise ValueError('La red movil ya esta activada')
-            else:
-                raise ValueError('El celular esta apagado')
-        except ValueError as e:
-            print(e)
-        
-    #desactivar red movil
-    def desactivarRedMovil(self):
-        '''
-        Desactiva la Red Movil.
-        Si ya esta desactivado tira error, porque no tiene sentido desactivar algo desactivado
-        '''
-        try:
-            if not self.celular.apagado:
-                if self.celular.redMovil:
-                    self.celular.redMovil = False
-                    print('Se desactivo la red movil')
-                else:
-                    raise ValueError('La red movil ya esta desactivada')
-            else:
-                raise ValueError('El celular esta apagado')
-        except ValueError as e:
-            print(e)
-        
-    #activar internet    
-    def activarInternet(self):
-        '''
-        Activa el Internet y entrega los mensajes que retuvo la Torre mientras el Internet estuvo desactivado.
-        Si ya esta activado tira error, porque no tiene activar algo activo
-        '''
-        try:
-            if not self.celular.apagado:
-                if not self.celular.internet:
-                    self.celular.internet = True
-                    print('Se activo el internet')
-                    if self.celular.numero in self.torre.telefonosRegistrados: #solo los celulares que estan registrados en la torre
-                        self.torre.entregarMensajes(self.celular.numero) #recibe los SMS que le enviaron cuando no tenia internet
-                else:
-                    raise ValueError('La internet ya esta activado')
-            else:
-                raise ValueError('El celular esta apagado')
-        except ValueError as e:
-            print(e)
-        
-    def desactivarInternet(self):
-        '''
-        Desactiva el Internet.
-        Si ya esta desactivado tira error, porque no tiene sentido desactivar algo desactivado
-        '''
-        try:
-            if not self.celular.apagado:
-                if self.celular.internet:
-                    self.celular.internet = False
-                    print('Se desactivo el internet')
-                else:
-                    raise ValueError('El internet ya esta desactivado')
-            else:
-                raise ValueError('El celular esta apagado')
-        except ValueError as e:
-            print(e)
-
-    def activarBluetooth(self):
-        '''
-        Activa el Bluetooth.
-        Si ya esta activado tira error, porque no tiene sentido activar algo activo
-        '''
-        try:
-            if not self.celular.apagado: 
-                if not self.celular.bluetooth:
-                    self.celular.bluetooth = True
-                    print('Se activo el bluetooth')
-                else:
-                    raise ValueError('El bluetooth ya esta activada')
-            else:
-                raise ValueError('El celular esta apagado')
-        except ValueError as e:
-            print(e)
-        
-    def desactivarBluetooth(self):
-        '''
-        Desactiva el Bluetooth.
-        Si ya esta desactivado tira error, porque no tiene sentido desactivar algo desactivado
-        '''
-        try:
-            if not self.celular.apagado:
-                if self.celular.bluetooth:
-                    self.celular.bluetooth = False
-                    print('Se desactivo el bluetooth')
-                else:
-                    raise ValueError('El bluetooth ya esta desactivado')
+                if nombre=='red movil':
+                    if not self.celular.redMovil:
+                        if not self.celular.modoAvion:
+                            self.celular.redMovil = True
+                            print('Se activo la red movil')
+                        else:
+                            print('No podes usar la red movil en modo avion')
+                    else:
+                        raise ValueError('La red movil ya esta activada')
+                elif nombre=='internet':
+                    if not self.celular.internet:
+                        self.celular.internet = True
+                        print('Se activo el internet')
+                        if self.celular.numero in self.torre.telefonosRegistrados: #solo para los celulares que estan registrados en la torre
+                            self.torre.entregarMensajes(self.celular.numero) #recibe los SMS que le enviaron cuando no tenia internet
+                    else:
+                        raise ValueError('La internet ya esta activado')
+                elif nombre=='bluetooth':
+                    if not self.celular.bluetooth:
+                        self.celular.bluetooth = True
+                        print('Se activo el bluetooth')
+                    else:
+                        raise ValueError('El bluetooth ya esta activada')
+                elif nombre=='modo avion':
+                    if not self.celular.modoAvion:
+                        self.celular.modoAvion = True
+                        print('Se activo el modo avion')
+                        self.desactivar('red movil')
+                    else:
+                        raise ValueError('El modo avion ya esta activado')    
             else:
                 raise ValueError('El celular esta apagado')
         except ValueError as e:
             print(e)
     
-    def activarModoAvion(self):
+    def desactivar(self, nombre: str):
         '''
-        Activa el Modo Avion.
-        Si ya esta activado tira error, porque no tiene sentido activar algo act
-        '''
-        try:
-            if not self.celular.apagado:
-                if not self.celular.modoAvion:
-                    self.celular.modoAvion = True
-                    print('Se activo el modo avion')
-                else:
-                    raise ValueError('El modo avion ya esta activado')
-            else:
-                raise ValueError('El celular esta apagado')
-        except ValueError as e:
-            print(e)
-        
-    def desactivarModoAvion(self):
-        '''
-        Desactiva el Modo Avion.
-        Si ya esta desactivado tira error, porque no tiene sentido desactivar algo desactivado
+        Desactiva la funcionalidad que se le pasa como parametro.
         '''
         try:
             if not self.celular.apagado:
-                if self.celular.modoAvion:
-                    self.celular.modoAvion = False
-                    print('Se desactivo el modo avion')
-                else:
-                    raise ValueError('El modo avion ya esta desactivada')
+                if nombre == 'red movil':
+                    if self.celular.redMovil:
+                        self.celular.redMovil = False
+                        print('Se desactivo la red movil')
+                    else:
+                        raise ValueError('La red movil ya esta desactivada')
+                elif nombre == 'internet':
+                    if self.celular.internet:
+                        self.celular.internet = False
+                        print('Se desactivo el internet')
+                    else:
+                        raise ValueError('El internet ya esta desactivado')
+                elif nombre == 'bluetooth':
+                    if self.celular.bluetooth:
+                        self.celular.bluetooth = False
+                        print('Se desactivo el bluetooth')
+                    else:
+                        raise ValueError('El bluetooth ya esta desactivado')
+                elif nombre == 'modo avion':
+                    if self.celular.modoAvion:
+                        self.celular.modoAvion = False
+                        print('Se desactivo el modo avion')
+                    else:
+                        raise ValueError('El modo avion ya esta desactivado')
             else:
                 raise ValueError('El celular esta apagado')
         except ValueError as e:
