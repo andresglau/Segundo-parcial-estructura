@@ -3,7 +3,6 @@ import Validaciones
 from ClaseTorre import Torre
 from ClaseEmail import Email
 from ClaseCelular import Celular
-from ClaseContacto import Contacto
 
 #metodos comunes de menu
 def mostrarMenu(lista):
@@ -94,7 +93,7 @@ def pedirMail():
         mail = input('Ingrese un mail para registrar en el celular:')
         if mail in Email.emailsRegistrados:
             print('No puede tener ese mail. Ya lo tiene otro usuario')
-        elif '@' not in mail or '.com' not in mail[-4:]:      #VALIDAR FORMATO MAIL
+        elif '@' not in mail or '.com' not in mail[-4:]:      #Esta es nuestra humilde validacion de mail
             print('Formato de mail no valido')
         else:
             valido = True
@@ -105,12 +104,14 @@ def operar(menuOperar):
     existe=False
     while not existe:
         try:
+            print('Numeros de telefono para operar: ')
+            for numero in Celular.numerosUso:
+                print('\t',numero)
             opcion=int(input('Ingrese un numero de telefono. Ingrese 1 para volver atras: '))
             if opcion==1 or opcion in Celular.numerosUso:
                 existe=opcion
         except ValueError:
             print('Debe ingresar una opcion valida')
-            #si sobra tiempo printear los telefonos disponibles
     if existe==1:
         mostrarMenu([('Instanciar',instanciar,[torre]),('Operar',operar,[menuOperar]),('Terminar',terminar,[])])
     else:
@@ -153,8 +154,8 @@ def abrirApp():
     celularActivo.verAplicaciones()
     app=input('Ingrese el nombre de la aplicacion: ')
     if app in celularActivo.aplicaciones:
-        if app=='SMS' and not celularActivo.internet:
-            print('No se puede acceder a SMS sin internet')
+        if app in ('SMS', 'Email', 'App Store') and not celularActivo.internet:
+            print(f'No se puede acceder a {app} sin internet')
         else:
             volver = False
             while not volver:
@@ -170,30 +171,8 @@ def eliminarApp():
         print(e)
     finally:
         mostrarMenu([('Apagar', apagar, []), ('Bloquear', bloquear, []), ('Abrir App', abrirApp, []), ('Eliminar App', eliminarApp, []), ('Salir', salir, [])])
-    
 
-# #main
-# andi=Celular('Andi','iphone 15', '1', 8, 64, 1167671659, 1234,'andi@gmail.com',torre)
-# ichi=Celular('Ichi', 'iphone 15', '1', 8, 64, 1156789023, 1234, 'ichi@gmail.com', torre)
-# fede=Celular('Fede', 'iphone 15', '1', 8, 64, 1198765432, 1234, 'fede@gmail.com', torre)
-# manu=Celular('Manu', 'iphone 15', '1', 8, 64, 1123455432, 1234, 'manu@gmail.com', torre)
-
-# andi.aplicaciones['Contactos'].contactos={ichi.nombre:Contacto(ichi.nombre,ichi.numero),fede.nombre:Contacto(fede.nombre,fede.numero),manu.nombre:Contacto(manu.nombre,manu.numero)}
-# andi.aplicaciones['Telefono'].contactos = andi.aplicaciones['Contactos'].contactos
-# andi.aplicaciones['SMS'].contactos = andi.aplicaciones['Contactos'].contactos
-# ichi.aplicaciones['Contactos'].contactos={'andi':Contacto('andi',1167671659), 'fede':Contacto('fede',1198765432),'manu':Contacto('manu',1123455432)}
-# ichi.aplicaciones['Telefono'].contactos = ichi.aplicaciones['Contactos'].contactos
-# ichi.aplicaciones['SMS'].contactos = ichi.aplicaciones['Contactos'].contactos
-
-
-# for celular in Celular.numerosUso.values():
-#     torre.agregarTelefono(celular)
-#     celular.apagado=False
-#     celular.redMovil=True
-#     celular.internet=True
-
-
-#instancias
+#Main
 try:
     torre=Torre()
     menuDesbloquear = [('Apagar', apagar, []), ('Bloquear', bloquear, []), ('Abrir App', abrirApp, []), ('Eliminar App', eliminarApp, []), ('Salir', salir, [])]
@@ -215,5 +194,6 @@ try:
         print(f'Error no esperado. Error: {e}')
 
     sobreescribirCSV(archivo)
+    
 except:
     print('Error grave. Comunicarse.')

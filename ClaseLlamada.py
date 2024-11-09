@@ -11,7 +11,6 @@ class Llamada:
         self.duracion = self.terminoLlamada - self.empezoLlamada
         print(f'Se termino la llamada de duracion {self.duracion}')
     def __str__(self):
-        #perfeccionar que es lo que muestra
-        return f'Llamada de {self.numEmisor} a {self.numReceptor} de {self.duracion}'   #asi le aparece a la torre. por ahora en los telefonos tambien
+        return f'Llamada de {self.numEmisor} a {self.numReceptor} de {self.duracion}'   #asi le aparece a la torre. por ahora en los telefonos tambien (modificar para el final)
     def __repr__(self):
         return self.__str__()

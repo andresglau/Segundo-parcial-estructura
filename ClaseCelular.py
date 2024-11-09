@@ -7,7 +7,6 @@ from ClaseEmail import Email
 class Celular:
     
     idUnicos=set()
-    # modelosPermitidos={'iphone 15','iphone 16','samsung s20'} YA ESTA EN EL MENU
     numerosUso = dict() #No se pueden repetir numeros celulares
     
     def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int, codigo: int, mail: str, torre: Torre):
@@ -50,7 +49,6 @@ class Celular:
         '''
         torre.agregarTelefono(self)
     
-    #prender el telefono si esta apagado    
     def prender(self):
         '''
         El celular cambia su estado de apagado.
@@ -62,7 +60,6 @@ class Celular:
         else:    
             raise ValueError('El celular ya esta prendido')
     
-    #prender el telefono si esta prendido    
     def apagar(self):
         '''
         El celular cambia su estado de prendido.
@@ -88,7 +85,6 @@ class Celular:
         else:
             raise ValueError('El celular ya esta apagado')
         
-    #desbloquear el telefono si esta bloqueado    
     def desbloquear(self):
         '''
         Desbloquea el celular pero solo si ingreso la clave correcta.
@@ -114,7 +110,6 @@ class Celular:
             except ValueError as e:
                 print(e)
     
-    #bloquear el telefono si esta desblqueado        
     def bloquear(self):
         '''
         Bloquea el celular.
@@ -142,7 +137,7 @@ class Celular:
             print('Es una aplicacion base, no se puede eliminar')
         else:
             self.aplicaciones.pop(nombreApp)
-            print(f'Se elimino la aplicacion {nombreApp}') #creo que asi hace lo mismo en una linea print(f'Se elimino la aplicacion {self.aplicaciones.pop(nombreApp)}')
+            print(f'Se elimino la aplicacion {nombreApp}')
 
     def verAplicaciones(self):
         '''
@@ -157,122 +152,3 @@ class Celular:
     
     def __str__(self):
         return f'El celular de {self.nombre} modelo {self.modelo} tiene numero de celular {self.numero}'
-
-#MAIN
-# torre=Torre()
-# celu = Celular('Isidro', 'iphone 15', 'iOS 7.1', 150, 64, 1156789023)
-# try:
-#     celu.desbloquear()
-# except ValueError as e:
-#     print(e)
-
-# try:
-#     celu.apagar()
-# except ValueError as e:
-#     print(e)
-
-# try:
-#     celu.bloquear()
-# except ValueError as e:
-#     print(e)
-    
-# celu.prender()
-# celu.desbloquear()
-# celu.activarInternet(torre)
-# celu.activarRedMovil()
-
-# celu2 = Celular('Andres', 'iphone 15', 'iOS 7.1', 150, 64, 1167671659)
-# celu2.prender()
-# celu2.activarInternet(torre)
-# celu2.activarRedMovil()
-
-# torre.agregarTelefono(celu)
-# torre.agregarTelefono(celu2)
-
-# celu2.aplicaciones['Contactos'].agregarContacto('isidro',1156789023)
-# celu.aplicaciones['Telefono'].llamarPorTeclado(1167671659,torre)
-# a=input('hola')
-# celu.aplicaciones['Telefono'].cortarLlamada(torre)
-# print(celu.aplicaciones['Telefono'].registroDeLlamadas, end = '\n')
-# print(celu2.aplicaciones['Telefono'].registroDeLlamadas, end = '\n')
-# print(torre.registroDeLlamadas)
-
-# celu.aplicaciones['SMS'].crearChat(1167671659,torre)
-
-# celu2.aplicaciones['SMS'].abrirChatPorNombre('isidro')
-# celu2.aplicaciones['SMS'].chatAbierto.enviarMensaje('MENSAJE',celu.numero,torre)
-
-
-# celu2.aplicaciones['SMS'].verChats()
-
-
-# celu.desactivarInternet()
-
-# celu2.aplicaciones['SMS'].chatAbierto.enviarMensaje('Estas sin internet',celu.numero,torre)
-
-# celu.activarInternet(torre)
-
-# celu2.aplicaciones['SMS'].chatAbierto.verChat()
-
-
-#PROBANDO MAIN2
-# try:
-#     celuAndy=Celular('Andy', 'iphone 15', '12', 12, 256, 1145672241)
-#     celuFede=Celular('Fede', 'iphone 15', '12', 12, 256, 1145673241)
-#     torreCentral = Torre()
-    
-#     #COSAS BASICAS PARA PODER USARLO
-#     celuIchi = Celular('Isidro', 'iphone 15', '12', 12, 256, 1145272200)
-#     celuIchi.prender()
-#     celuIchi.desbloquear()
-    
-#     #ABRO CONTACTOS Y OPERO
-#     # celuIchi.abrirApp('Contactos')
-#     # celuIchi.appActiva.agregarContacto('Fede', 1145673241)
-#     # celuIchi.appActiva.actualizarContacto('Fede', 'Fede L', 1189022331)
-#     # celuIchi.appActiva.eliminarContacto('Fede L')
-#     # celuIchi.appActiva.verListaContactos()
-#     # celuIchi.cerrarApp()
-    
-#     #ABRO TELEFONO E INTENTO LLAMAR
-#     celuIchi.abrirApp('Telefono')
-#     # celuIchi.appActiva.llamarPorTeclado(1145672241, torreCentral)     ACA TODAVIA NO ESTA REGISTRADO
-#     torreCentral.agregarTelefono(celuAndy)
-#     torreCentral.agregarTelefono(celuIchi)
-#     celuIchi.activarRedMovil()
-#     #celuAndy activa lo suyo
-#     celuAndy.prender()
-#     celuAndy.activarRedMovil()
-#     #seguimos
-#     # celuIchi.appActiva.llamarPorTeclado(1145672241, torreCentral)
-#     # celuAndy.aplicaciones['Telefono'].cortarLlamada(torreCentral)
-#     # celuIchi.appActiva.cortarLlamada(torreCentral)
-#     celuIchi.appActiva.verHistorialLlamadas()
-    
-#     #ABRO SMS Y MANDO MENSAJES
-#     # celuIchi.appActiva.crearChat(1145272200, torreCentral)
-
-#     #PRUEBO BAJAR APP
-#     # celuIchi.cerrarApp()
-#     # celuIchi.abrirApp('App Store')
-#     # celuIchi.appActiva.verAplicacionesDisponibles()
-#     # celuIchi.appActiva.descargarAplicacion('Configuracion')
-#     # celuIchi.cerrarApp()
-#     # celuIchi.abrirApp('Configuracion')
-#     # celuIchi.verAplicaciones()
-    
-
-# except BaseException as e:
-#     print(e)
-
-
-
-# # alicaciones={'Telefono': 'Telefono(self.numero)'}
-# # celu.abrirAplicacion('Telefono')
-# # #self.appActiva = Telefono()
-# # celu.salirAplicacion()      #self.appActiva = None  
-# # #self.appActiva = AppStore()  
-# # #self.appActiva = 
-
-# # #self.telefono=Telefono(self.numero)
-

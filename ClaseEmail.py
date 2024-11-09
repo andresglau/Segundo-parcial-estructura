@@ -22,9 +22,9 @@ class Email(Aplicacion):
     def __init__(self, miMail: str):
         super().__init__()
         self.miMail = miMail
-        self.emailsRegistrados[miMail]=self     #al instanciar el telefono se verifica que no haya otro mail igual
-        self.bandejaEntrada = deque()           #PILA
-        self.bandejaEnviados = deque()          #PILA
+        self.emailsRegistrados[miMail]=self     #al instanciar el telefono en el menu ya se verifica que no haya otro mail igual
+        self.bandejaEntrada = deque()           #Pila
+        self.bandejaEnviados = deque()          #Pila
         self.noLeidos = set()                   #almacena los mails no leidos y los marcados como no leidos
         self.opciones = [('Redactar un mail',self.mandarMail,[]),
                         ('Abrir mail', self.abrirMail, []),
@@ -129,24 +129,3 @@ class Email(Aplicacion):
             return False
         print('Bandeja de entrada vacia')
         return True
-    
-# ichi=Email('isidro@gmail.com')
-# andi=Email('andres@gmail.com')
-# fede=Email('fede@gmail.com')
-# manu=Email('manu@gmail.com')
-
-# ichi.mandarMail(andi.miMail,'saludo','hola como estas')
-# fede.mandarMail(andi.miMail,'boca','gano boca')
-# manu.mandarMail(andi.miMail,'river','gano river')
-# ichi.mandarMail(andi.miMail,'tp','cuando hacemos el tp')
-# ichi.mandarMail(andi.miMail,'chau','nos vemos')
-
-# # andi.verBandejaEntrada()
-# # ichi.verBandejaEnviado()
-# # ichi.abrirMailEnviado(2)
-# andi.abrirMail(1)
-# andi.abrirMail(3)
-# print()
-# andi.verBandejaEntrada()
-# print()
-# andi.verBandejaEntradaPorNoLeido()

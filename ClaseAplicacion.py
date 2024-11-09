@@ -7,7 +7,7 @@ import Validaciones
 
 class Aplicacion:
     def __init__(self):
-        self.opciones = None
+        self.opciones = [('Volver a pantalla de inicio', self.volver, [])]
     
     def volver(self):
         return True
@@ -15,7 +15,7 @@ class Aplicacion:
 class AplicacionComunicacion(Aplicacion):
     def __init__(self, numero: int, torre: Torre):
         super().__init__()
-        self.contactos = {}    #La lista de contactos 
+        self.contactos = {}    #La lista de contactos {nombre : objeto Contacto}
         self.miNumero = numero
         self.torre=torre
     
@@ -140,7 +140,7 @@ class Telefono(AplicacionComunicacion):
     
     def __init__(self,numero, torre: Torre):
         super().__init__(numero, torre)
-        self.registroDeLlamadas = deque()   #pila. appendleft
+        self.registroDeLlamadas = deque()   #pila. con appendleft
         self.enLlamada = False              #Se cambia cuando esta en llamada a la Llamada correspondiente
         self.opciones = [('Ver contactos',self.verListaContactos,[]),
                          ('Ver contactos en particular',self.verContactosEnParticular,[]),
@@ -166,7 +166,7 @@ class Telefono(AplicacionComunicacion):
             except ValueError as e:
                 print(e)
             else:
-                if self.torre.verificarEstado(self.nombre,self.miNumero) and self.torre.verificarEstado(self.nombre,numero): #verifico ambos numeros
+                if self.torre.verificarEstado(self.nombre,self.miNumero) and self.torre.verificarEstado(self.nombre,numero): #verifica ambos numeros
                     self.enLlamada = Llamada(self.miNumero, numero)
                     self.torre.telefonosRegistrados[self.enLlamada.numReceptor].aplicaciones['Telefono'].recibirLlamada(self.enLlamada)
 
@@ -195,9 +195,8 @@ class Telefono(AplicacionComunicacion):
         Posteriormente se procede a recibir o rechazar la llamada. Si la llamada se rechaza, no se guarda
         '''
         print(f'\n(Se esta operando el telefono: {llamada.numReceptor})')
-        # contacto = list(filter(lambda contacto: contacto.nombre if contacto.numTelefono == llamada.numEmisor else None,self.contactos.values()))   
         if llamada.numEmisor in list(map(lambda contacto: contacto.numTelefono,self.contactos.values())):
-            for nombre in self.contactos:                       #REEVER
+            for nombre in self.contactos:
                 if self.contactos[nombre].numTelefono==llamada.numEmisor:
                     print('Llamada de', nombre)
         else:
@@ -222,7 +221,6 @@ class Telefono(AplicacionComunicacion):
         '''
         self.torre.registroDeLlamadas.append(llamada)
 
-    #cortar llamada
     def cortarLlamada(self):
         '''
         Corta una llamada.
@@ -359,7 +357,7 @@ class SMS(AplicacionComunicacion):
             print('Se cerro el chat')
         
     
-    def verChats(self): #ver como hacer para printear nombre/numero
+    def verChats(self):
         '''
         Muestra los chats.
         '''
@@ -386,7 +384,8 @@ class SMS(AplicacionComunicacion):
             else:
                 print(self.misChats[numero],'eliminado')
                 self.misChats.pop(numero)
-                self.torre.telefonosRegistrados[numero].aplicaciones['SMS'].misChats.pop(self.miNumero) #Aunque no suceda en la realidad, si alguien borra un chat, se elimina para ambos
+                self.torre.telefonosRegistrados[numero].aplicaciones['SMS'].misChats.pop(self.miNumero)
+                #Aunque no suceda en la realidad, si alguien borra un chat, se elimina para ambos
                 
     def enviarMensaje(self):
         '''

@@ -1,5 +1,6 @@
+import datetime
 class Evento:
-    def __init__(self, evento, fecha): 
+    def __init__(self, evento, fecha: datetime.date): 
         self.evento=evento
         self.fecha=fecha
         

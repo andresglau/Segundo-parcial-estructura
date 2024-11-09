@@ -1,14 +1,13 @@
 from collections import deque
 
-class Torre:   #cambiar todos los "torre" a "central"
+class Torre:
     
     def __init__(self):
-        self.telefonosRegistrados={}        #{numero,objeto}
+        self.telefonosRegistrados={}        #{numero : objeto Celular}
         self.registroDeLlamadas=deque()     #Cola
         self.registroDeMensajes=deque()     #Cola    Porque quiero ver primero los mensajes mas viejos, los que llegaron primeros
-        self.mensajesPendientes={} #diccionario {numero: cola de mensajes pendientes que se entregan cuando se conecta a internet}
+        self.mensajesPendientes={} #{numero: cola de mensajes pendientes que se entregan cuando se conecta a internet}
     
-    #agregar telefono
     def agregarTelefono(self, celular):
         '''
         Agrega un celular a los registrados por la Torre.
@@ -19,7 +18,6 @@ class Torre:   #cambiar todos los "torre" a "central"
         else:
             raise ValueError('Telefono ya registrado')
         
-    #dar de baja telefono
     def borrarTelefono(self, numero):
         '''
         Saca un telefono de los registrados por la Torre
@@ -29,18 +27,17 @@ class Torre:   #cambiar todos los "torre" a "central"
         else:
             self.telefonosRegistrados.pop(numero)
             
-    #verificar estado
     def verificarEstado(self, aplicacionDeOrigen, numTelefono):
         '''
         Verifica que un usuario este disponible para comunicarse a traves de la aplicacion Telefono con una llamada
         o a traves de SMS con un mensaje
         '''
         if numTelefono in self.telefonosRegistrados:
+            if self.telefonosRegistrados[numTelefono].apagado:
+                print(f'Celular {numTelefono} apagado')
+                return False
             if aplicacionDeOrigen=='Telefono':
-                if self.telefonosRegistrados[numTelefono].apagado:
-                    print(f'Celular {numTelefono} apagado')
-                    return False
-                elif not self.telefonosRegistrados[numTelefono].redMovil:
+                if not self.telefonosRegistrados[numTelefono].redMovil:
                     print(f'Celular {numTelefono} sin red movil')
                     return False
                 elif self.telefonosRegistrados[numTelefono].aplicaciones['Telefono'].enLlamada:
@@ -48,10 +45,7 @@ class Torre:   #cambiar todos los "torre" a "central"
                     return False
                 return True
             elif aplicacionDeOrigen=='SMS':
-                if self.telefonosRegistrados[numTelefono].apagado:      #SE REPITE
-                    print(f'Celular {numTelefono} apagado')
-                    return False
-                elif not self.telefonosRegistrados[numTelefono].internet:
+                if not self.telefonosRegistrados[numTelefono].internet:
                     print(f'Celular {numTelefono} sin internet')
                     return False
                 return True
@@ -66,9 +60,9 @@ class Torre:   #cambiar todos los "torre" a "central"
         sino, la Torre retiene el mensaje hasta que se vuelva a conectar a Internet el receptor
         '''
         self.registroDeMensajes.append(mensaje)
-        if self.verificarEstado('SMS',mensaje.numReceptor): #si lo puede recibir, lo recibe
+        if self.verificarEstado('SMS', mensaje.numReceptor): #si lo puede recibir, lo recibe
             mensaje.entregado=True
-        else:                     #sino una vez que encienda el internet, quiere decir que tambien esta prendido, recibe el mensaje
+        else:                 #sino una vez que encienda el internet, quiere decir que tambien esta prendido, recibe el mensaje
             self.mensajesPendientes[mensaje.numReceptor].append(mensaje)
             
     def entregarMensajes(self, numero):

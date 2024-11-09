@@ -28,7 +28,7 @@ class Configuracion(Aplicacion):
         Cuando se activa el Internet, se entregan los mensajes que estaba reteniendo la Torre Central
         '''
         try:
-            if not self.celular.apagado: #ver si hace falta verificar esto en todos los metodos de activar/desactivar
+            if not self.celular.apagado:
                 if nombre=='red movil':
                     if not self.celular.redMovil:
                         if not self.celular.modoAvion:
