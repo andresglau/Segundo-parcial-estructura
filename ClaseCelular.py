@@ -151,27 +151,6 @@ class Celular:
         print('Aplicaciones en el celular:')
         for nombre in self.aplicaciones:
             print('\t'+nombre)
-    
-    def get_nombre(self):
-        return self.nombre
-    
-    def get_modelo(self):
-        return self.modelo
-    
-    def get_version(self):
-        return self.version
-
-    def get_memoriaRAM(self):
-        return self.memoriaRAM
-
-    def get_almacenamiento(self):
-        return self.almacenamiento
-
-    def get_numero(self):
-        return self.numero
-
-    def get_codigo(self):
-        return self.codigo
 
     def get_mail(self):
         return self.aplicaciones['Email'].miMail

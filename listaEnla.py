@@ -45,7 +45,7 @@ class ListaMensajes(Lista):
     def __init__(self, inicio=None):
         super().__init__(inicio)
         
-    def agregarInicio(self):
+    def agregarInicio(self):                #VER ESTO, CON EL AGREGAR FINAL YA ESTA ME PARECE
         pass
     
     def popLeft(self):
@@ -65,9 +65,9 @@ class ListaMensajes(Lista):
                 i = 1
                 while aux.siguiente != None:
                     if i == pos:
-                        if miNumero == aux.siguiente.dato.numEmisor:
+                        if miNumero == aux.dato.numEmisor:
                             aux.siguiente = aux.siguiente.siguiente
-                            print(f'Se elimino el mensaje {aux.siguiente.dato}')
+                            print(f'Se elimino el mensaje {aux.dato}')
                         else:
                             print('No podes eliminar un mensaje que envio la otra persona')
                         return

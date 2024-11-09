@@ -13,7 +13,7 @@ class Evento:
         return self.fecha<other.fecha
         
     def __str__(self):
-        return f'Evento: {self.evento}, fecha: {self.fecha} '
+        return f'Evento: {self.evento}, Fecha: {self.fecha} '
     
     def __repr__(self):
         return self.__str__()

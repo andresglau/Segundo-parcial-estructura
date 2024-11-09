@@ -289,7 +289,7 @@ class SMS(AplicacionComunicacion):
     
     def crearChat(self):
         '''
-        Crea un chat entre dos 
+        Crea un chat entre dos usuarios. Lo crea en la aplicacion de SMS de ambos usuario.
         '''
         numero=input('Ingrese el numero de la persona con la que desea crear el chat: ')
         if Validaciones.validarFormatoNumTelefono(numero):
@@ -310,6 +310,10 @@ class SMS(AplicacionComunicacion):
                 print(chat,'creado')
 
     def abrirChatPorNumero(self):
+        '''
+        Abre un chat por numero de telefono.
+        Tira error si no se le pasa en el input un numero de telefono
+        '''
         if self.chatAbierto==False:
             try:
                 numero = int(input('Ingrese el numero de telefono del chat que desea abrir: '))
@@ -325,6 +329,9 @@ class SMS(AplicacionComunicacion):
             print('Ya hay un chat abierto')
         
     def abrirChatPorNombre(self):
+        '''
+        Abre un chat por nombre.
+        '''
         if self.chatAbierto==False:
             try:
                 nombre = input('Ingrese el nombre del contacto del chat que desea abrir: ')
@@ -342,6 +349,9 @@ class SMS(AplicacionComunicacion):
             print('Ya hay un chat abierto')
                 
     def cerrarChat(self):
+        '''
+        Cierra un chat en caso de que este abierto.
+        '''
         if self.chatAbierto==False:
             print('No hay un chat abierto')
         else:
@@ -350,6 +360,9 @@ class SMS(AplicacionComunicacion):
         
     
     def verChats(self): #ver como hacer para printear nombre/numero
+        '''
+        Muestra los chats.
+        '''
         if self.misChats:
             for chat in list(sorted(self.misChats.values(), reverse = True)):
                 print(chat)
@@ -357,6 +370,10 @@ class SMS(AplicacionComunicacion):
             print('No hay chats')
 
     def borrarChat(self):
+        '''
+        Se borra el chat para los dos usuarios que intervienen en el chat, dejando asi el objeto
+        Chat fuera de toda asignacion de variable
+        '''
         numero=input('Ingrese el numero de la persona con la que desea borrar el chat: ')
         if Validaciones.validarFormatoNumTelefono(numero):
             pass
@@ -372,6 +389,9 @@ class SMS(AplicacionComunicacion):
                 self.torre.telefonosRegistrados[numero].aplicaciones['SMS'].misChats.pop(self.miNumero) #Aunque no suceda en la realidad, si alguien borra un chat, se elimina para ambos
                 
     def enviarMensaje(self):
+        '''
+        Envia un mensaje si hay un chat abierto.
+        '''
         if not self.chatAbierto:
             print('No hay ningun chat abierto')
         else:
@@ -379,12 +399,19 @@ class SMS(AplicacionComunicacion):
             self.chatAbierto.enviarMensaje(contenido, self.miNumero, self.torre)
     
     def verChatAbierto(self):
+        '''
+        Muestra el chat que esta abierto.
+        '''
         if not self.chatAbierto:
             print('No hay ningun chat abierto')
         else:
             self.chatAbierto.verChat()
             
     def borrarMensaje(self):
+        '''
+        Borra un mensaje mediante su posicion.
+        Previamente muestra el chat para poder ver la posicion de los mensajes
+        '''
         if not self.chatAbierto:
             print('No hay ningun chat abierto')
         else:
@@ -400,5 +427,8 @@ class SMS(AplicacionComunicacion):
                     self.chatAbierto.borrarMensaje(pos, self.miNumero)
                 
     def volver(self):
+        '''
+        Cuando se sale de la aplicacion, se cierran los chats en caso de que haya alguno abierto
+        '''
         self.cerrarChat()
         return True

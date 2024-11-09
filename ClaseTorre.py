@@ -3,13 +3,16 @@ from collections import deque
 class Torre:   #cambiar todos los "torre" a "central"
     
     def __init__(self):
-        self.telefonosRegistrados={} #{numero,objeto}
+        self.telefonosRegistrados={}        #{numero,objeto}
         self.registroDeLlamadas=deque()     #Cola
-        self.registroDeMensajes=deque()     #Cola       Porque quiero ver primero los mensajes mas viejos, los que llegaron primeros
-        self.mensajesPendientes={} #diccionaro {numero: cola de mensajes pendientes que se entregan cuando se conecta a internet}
+        self.registroDeMensajes=deque()     #Cola    Porque quiero ver primero los mensajes mas viejos, los que llegaron primeros
+        self.mensajesPendientes={} #diccionario {numero: cola de mensajes pendientes que se entregan cuando se conecta a internet}
     
     #agregar telefono
-    def agregarTelefono(self, celular): #en principio le pasamos el objeto celular como parametro
+    def agregarTelefono(self, celular):
+        '''
+        Agrega un celular a los registrados por la Torre.
+        '''
         if celular.numero not in self.telefonosRegistrados:
             self.telefonosRegistrados[celular.numero]=celular
             self.mensajesPendientes[celular.numero]=deque()
@@ -18,6 +21,9 @@ class Torre:   #cambiar todos los "torre" a "central"
         
     #dar de baja telefono
     def borrarTelefono(self, numero):
+        '''
+        Saca un telefono de los registrados por la Torre
+        '''
         if numero not in self.telefonosRegistrados:
             raise ValueError('Telefono no registrado')
         else:
@@ -25,6 +31,10 @@ class Torre:   #cambiar todos los "torre" a "central"
             
     #verificar estado
     def verificarEstado(self, aplicacionDeOrigen, numTelefono):
+        '''
+        Verifica que un usuario este disponible para comunicarse a traves de la aplicacion Telefono con una llamada
+        o a traves de SMS con un mensaje
+        '''
         if numTelefono in self.telefonosRegistrados:
             if aplicacionDeOrigen=='Telefono':
                 if self.telefonosRegistrados[numTelefono].apagado:
@@ -50,13 +60,21 @@ class Torre:   #cambiar todos los "torre" a "central"
             return False
         
     def recibirMensaje(self, mensaje):
+        '''
+        Recibe un mensaje y lo agrega al registro de mensajes de la torre.
+        Si el receptor del mensaje tiene el celular prendido y con internet, se le entrega el mensaje,
+        sino, la Torre retiene el mensaje hasta que se vuelva a conectar a Internet el receptor
+        '''
         self.registroDeMensajes.append(mensaje)
         if self.verificarEstado('SMS',mensaje.numReceptor): #si lo puede recibir, lo recibe
             mensaje.entregado=True
-        else: #sino una vez que encienda el internet, quiere decir que tambien esta prendido, recibe el mensaje
+        else:                     #sino una vez que encienda el internet, quiere decir que tambien esta prendido, recibe el mensaje
             self.mensajesPendientes[mensaje.numReceptor].append(mensaje)
             
     def entregarMensajes(self, numero):
+        '''
+        Si el usuario tiene mensajes pendientes de ser entregados, la Torre le entrega los mensajes
+        '''
         if self.mensajesPendientes[numero]:
             for mensaje in self.mensajesPendientes[numero]:
                 mensaje.entregado=True
