@@ -6,6 +6,10 @@ from ClaseCelular import Celular
 
 #metodos comunes de menu
 def mostrarMenu(lista):
+    '''
+    A partir de la lista de tuplas muestra enumerada la lista de opciones,
+    Luego valida la opcion. Y por ultimo la ejecuta
+    '''
     print()
     nuevaLista=list(map(lambda tupla: tupla[0],lista))
     for i, opcion in enumerate(nuevaLista):
@@ -17,6 +21,9 @@ def mostrarMenu(lista):
         return True
 
 def validarOpcion(opcion,lista):
+    '''
+    Valida la opcion elegida en mostrar menu
+    '''
     try:
         opcion=int(opcion)
     except ValueError:
@@ -28,10 +35,18 @@ def validarOpcion(opcion,lista):
     return False
      
 def ejecutarOpcion(opcion,lista):
+    '''
+    Ejecuta la opcion seleccionada. Se llama a la funcion sin parantesis,
+    y se le agrega el parentesis con un spread dentro que se transforman 
+    en los parametros
+    '''
     return lista[int(opcion)][1](*lista[int(opcion)][2])
 
-#a diferencia de mostrarMenu, este no ejecuta la opcion sino que la devuelve
 def mostrarOpciones(lista):
+    '''
+    A diferencia de mostrarMenu, esta funcion no ejecuta la opcion sino que la devuelve.*args
+    Sirve para la funcion de instanciacion de celulares
+    '''
     for i, opcion in enumerate(lista):
         print(i,opcion)
     opcion=input('Ingrese la opcion: ')
@@ -41,11 +56,19 @@ def mostrarOpciones(lista):
 
 #funciones especificas
 def terminar():
+    '''
+    Muestra programa terminado y se termina de mostrar el menu
+    '''
     print("Programa terminado")
     
 #FuncionInstanciar
 def instanciar(torre: Torre, menuOperar):
-    celu = Celular(pedirNombre(), pedirModelo(),pedirVersion(),pedirMemoriaRAM(),pedirAlmacenamientoGB(),pedirNumero(), pedirCodigo(), pedirMail(),torre)
+    '''
+    Pide todos los datos necesarios para instanciar un celular, los valida
+    y hasta que no sean correctos los vuelve a pedir. Una vez todos validados,
+    muestra el menu base de nuevo
+    '''
+    Celular(pedirNombre(), pedirModelo(),pedirVersion(),pedirMemoriaRAM(),pedirAlmacenamientoGB(),pedirNumero(), pedirCodigo(), pedirMail(),torre)
     mostrarMenu([('Instanciar',instanciar,[torre]),('Operar',operar,[menuOperar]),('Terminar',terminar,[])])
     
 def pedirNombre():
@@ -101,6 +124,10 @@ def pedirMail():
 
 #funcion operar
 def operar(menuOperar):
+    '''
+    Pide un numero de celular para operarlo y lo define como el celular activo
+    o se ingresa 1 para volver al menu base
+    '''
     existe=False
     while not existe:
         try:
@@ -110,6 +137,8 @@ def operar(menuOperar):
             opcion=int(input('Ingrese un numero de telefono. Ingrese 1 para volver atras: '))
             if opcion==1 or opcion in Celular.numerosUso:
                 existe=opcion
+            else:
+                print('Numero de telefono inexistente')
         except ValueError:
             print('Debe ingresar una opcion valida')
     if existe==1:
@@ -120,21 +149,38 @@ def operar(menuOperar):
         mostrarMenu(menuOperar)
         
 def salir():
-    if not celularActivo.bloqueado: #siempre que se sale del celular, ese celular se bloquea.
+    '''
+    Este metodo vuelve al menu base desde cualquier otro menu.
+    Si el celular no estaba bloqueado lo bloquea.
+    '''
+    if not celularActivo.bloqueado: 
         celularActivo.bloquear()
     mostrarMenu([('Instanciar',instanciar,[torre, menuOperar]),('Operar',operar,[menuOperar]),('Terminar',terminar,[])])
     
 def prender(menuPrender):
-    if celularActivo.apagado: #un telefono cuando se dejo de operar no se apaga ya que sino no se podria realizar llamadas
+    '''
+    Prende un celular y si ya estaba prendido no hace nada.
+    Muestra el menu prender
+    '''
+    if celularActivo.apagado:
         celularActivo.prender()
     mostrarMenu(menuPrender)
     
 #funciones prender
 def apagar():
+    '''
+    Apaga el celular.
+    Muestra el menu operar
+    '''
     celularActivo.apagar()
     mostrarMenu([('Prender', prender,[menuPrender]), ('Salir', salir,[])])
     
 def desbloquear(menuDesbloquear):
+    '''
+    Pide el codigo de desbloqueo e intenta desbloquearlo.
+    Si falla 6 veces se vuelve al menu base
+    Si acierta se muestra el menu desbloquear
+    '''
     i=0
     while celularActivo.bloqueado and i<6:
         celularActivo.desbloquear()
@@ -147,10 +193,20 @@ def desbloquear(menuDesbloquear):
         
 #funciones desbloquear
 def bloquear():
+    '''
+    Bloquea el celular y muestra el menu prender
+    '''
     celularActivo.bloquear()
     prender([('Desbloquear', desbloquear,[menuDesbloquear]), ('Apagar', apagar,[]), ('Salir', salir,[])])
     
 def abrirApp():
+    '''
+    Muestra las aplicaciones que estan descargadas en el celular.
+    Valida que la aplicacion este descargada.
+    Verifica si tiene internet para las apps que lo necesitan.
+    Muestra el menu de la aplicacion.
+    Cuando sale del menu de la aplicacion muestra el menu desbloquear
+    '''
     celularActivo.verAplicaciones()
     app=input('Ingrese el nombre de la aplicacion: ')
     if app in celularActivo.aplicaciones:
@@ -165,6 +221,10 @@ def abrirApp():
     mostrarMenu([('Apagar', apagar, []), ('Bloquear', bloquear, []), ('Abrir App', abrirApp, []), ('Eliminar App', eliminarApp, []), ('Salir', salir, [])])
 
 def eliminarApp():
+    '''
+    Intenta eliminar la app. Independientemente de que la elimine o 
+    por alguna razon no pueda eliminarla, luego muestra el menu desbloquear
+    '''
     try:
         celularActivo.borrarAplicacion()
     except ValueError as e:
@@ -181,19 +241,22 @@ try:
     menuBase=[('Instanciar',instanciar,[torre, menuOperar]),('Operar',operar,[menuOperar]),('Terminar',terminar,[])]
 
     archivo = 'MemoriaCelulares.csv'
-    lectorCSV(archivo, torre)
+    lectorCSV(archivo, torre) #trae a todos los telefonos instanciados previamente
 
-    for celular in Celular.numerosUso.values():
+    for celular in Celular.numerosUso.values(): #activa estos metodos a todos los celulares por practicidad
         celular.apagado=False
         celular.redMovil=True
         celular.internet=True
 
     try:
-        mostrarMenu(menuBase)
+        mostrarMenu(menuBase) #se ejecuta el menu
     except BaseException as e:
         print(f'Error no esperado. Error: {e}')
+        
+    torre.borrarTelefono(1198765432)
+    mostrarMenu(menuBase)
 
-    sobreescribirCSV(archivo)
+    # sobreescribirCSV(archivo)
     
 except:
     print('Error grave. Comunicarse.')

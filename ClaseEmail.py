@@ -17,7 +17,7 @@ class Mail():
 class Email(Aplicacion):
     nombre = 'Email'
     icono = None
-    emailsRegistrados = {}
+    emailsRegistrados = {}                      #{Email como str : aplicacion Email}
     
     def __init__(self, miMail: str):
         super().__init__()
@@ -37,6 +37,9 @@ class Email(Aplicacion):
                         ('Volver a pantalla de inicio', self.volver, [])]
 
     def mandarMail(self):
+        '''
+        Se envia un mail si el mail de destino es valido
+        '''
         mailDestinatario=input('Ingrese el mail del destinatario: ')
         if mailDestinatario not in self.emailsRegistrados:
             print('Ese email no esta disponible')
@@ -48,15 +51,25 @@ class Email(Aplicacion):
             self.emailsRegistrados[mailDestinatario].recibirMail(mail)
 
     def recibirMail(self, mail):
+        '''
+        La otra persona recibe el mail
+        '''
         self.bandejaEntrada.appendleft(mail)
         self.noLeidos.add(mail)
     
     def verBandejaEntrada(self):
+        '''
+        Muestra la bandeja de entrada ordenada por fecha
+        '''
         print('Bandeja de mails recibidos:')
         for indice, mail in enumerate(self.bandejaEntrada):
             print(indice,': ', mail, sep='')
             
     def verBandejaEntradaPorNoLeido(self):
+        '''
+        Muestra la bandeja de entrada discriminada 
+        por no leidos primeros y luego los leidos
+        '''
         if not self.bandejaVacia():
             noLeidos=''
             leidos=''
@@ -68,6 +81,9 @@ class Email(Aplicacion):
             print(f'Mails no leidos:\n{noLeidos}Mails leidos:\n{leidos}')
         
     def abrirMail(self):
+        '''
+        Muestra el mail completo y lo elimina de no leidos
+        '''
         pos = input('Ingrese la posicion del mail en la bandeja de entrada: ')
         if not pos.isdigit():
             print('Invalido: No ingreso una posicion')
@@ -81,6 +97,9 @@ class Email(Aplicacion):
                     print('Posicion fuera de rango')
         
     def marcarComoNoLeido(self):
+        '''
+        Marca el mail como no leido
+        '''
         pos = input('Ingrese la posicion del mail a marcar como no leido en la bandeja de entrada: ')
         if not pos.isdigit():
             print('Invalido: No ingreso una posicion')
@@ -93,6 +112,9 @@ class Email(Aplicacion):
                     print('Posicion fuera de rango')
                 
     def eliminar(self): #solamente lo elimina de mi bandeja de entrada. De los enviados asumimos que no se puede borrar.
+        '''
+        Elimina un mail recibido
+        '''
         pos = input('Ingrese la posicion del mail a eliminar en la bandeja de entrada: ')
         if not pos.isdigit():
             print('Invalido: No ingreso una posicion')
@@ -106,11 +128,17 @@ class Email(Aplicacion):
                     print('Posicion fuera de rango')
                 
     def verBandejaEnviado(self):
+        '''
+        Muestra la bandeja de enviados ordenada por fecha
+        '''
         print('Bandeja de enviados:')
         for indice, mail in enumerate(self.bandejaEnviados):
             print(indice,': ', mail, sep='')
         
     def abrirMailEnviado(self):
+        '''
+        Muestra el mail enviado completo
+        '''
         pos = input('Ingrese la posicion del mail enviado en la bandeja de enviados: ')
         if not pos.isdigit():
             print('Invalido: No ingreso una posicion')
@@ -125,6 +153,9 @@ class Email(Aplicacion):
                 print('Bandeja de enviados vacia')
                 
     def bandejaVacia(self):
+        '''
+        Verifica si la bandeja de entrada esta vacia
+        '''
         if self.bandejaEntrada:
             return False
         print('Bandeja de entrada vacia')

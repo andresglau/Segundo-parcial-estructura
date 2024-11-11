@@ -79,7 +79,7 @@ class Calendario(Aplicacion):
                 
     def cambiarFechaEvento(self):
         '''
-        
+        Cambia la fecha de un evento registrado
         '''
         evento=input('Ingrese el evento: ')
         if evento not in self.eventos:

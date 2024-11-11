@@ -21,6 +21,9 @@ class Notas(Aplicacion):
                          ('Volver a pantalla de inicio', self.volver, [])]
         
     def crearNota(self):
+        '''
+        Se crea una nota si es que el titulo no existe
+        '''
         try:
             titulo=input('Ingrese el titulo: ')
             if titulo in self.misNotas:
@@ -34,6 +37,10 @@ class Notas(Aplicacion):
             print(e)
     
     def abrirNota(self):
+        '''
+        Abre una nota ya creada que permite distintas
+        funcionalidades sobre esta
+        '''
         if self.notaAbierta==False:
             try:
                 titulo=input('Ingrese el titulo: ')
@@ -48,6 +55,9 @@ class Notas(Aplicacion):
             print('Ya hay una nota abierta')
             
     def cerrarNota(self):
+        '''
+        Cierra una nota abierta
+        '''
         if self.notaAbierta==False:
             print('No hay una nota abierta')
         else:
@@ -55,6 +65,9 @@ class Notas(Aplicacion):
             print('Se cerro la nota')
     
     def eliminarNota(self):
+        '''
+        Elimina una nota
+        '''
         titulo=input('Ingrese el titulo: ')
         try:
             if titulo not in self.misNotas:
@@ -68,6 +81,10 @@ class Notas(Aplicacion):
             print(e)
     
     def verNotas(self):
+        '''
+        Muestra las notas ordenadas de mas reciente a mas 
+        antigua en funcion de la ultima modificacion
+        '''
         if self.misNotas:
             for nota in list(sorted(self.misNotas.values(), reverse = True)):
                 print(nota)
@@ -75,22 +92,35 @@ class Notas(Aplicacion):
             print('No hay notas')
             
     def volver(self):
+        '''
+        Modifica el metodo volver predeterminado agregandole que
+        cierre la nota que estaba abierta antes de salir
+        '''
         self.cerrarNota()
         return True
             
     def sobreescribirNotaAbierta(self):
+        '''
+        Sobreescribe la nota abierta
+        '''
         if not self.notaAbierta:
             print('No hay ninguna nota abierta')
         else:
             self.notaAbierta.sobreescribirNota()
             
     def agregarContenidoNotaAbierta(self):
+        '''
+        Agrega contenido a la nota abierta
+        '''
         if not self.notaAbierta:
             print('No hay ninguna nota abierta')
         else:
             self.notaAbierta.agregarContenido()
         
     def verNotaAbierta(self):
+        '''
+        Muestra el contenido de la nota abierta
+        '''
         if not self.notaAbierta:
             print('No hay ninguna nota abierta')
         else:

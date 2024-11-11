@@ -10,6 +10,11 @@ class Calculadora(Aplicacion):
                        ('Volver a pantalla de inicio', self.volver, [])]
         
     def operar(self):
+        '''
+        Se le pasan 2 numeros que se valida que sean numeros y 
+        un operador que se valida que sea valido,
+        luego se hace la operacion
+        '''
         while True:
             try:
                 num1 = float(input("Ingresa el primer numero: "))

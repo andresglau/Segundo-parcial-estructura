@@ -266,7 +266,7 @@ class SMS(AplicacionComunicacion):
     nombre='SMS'
     icono=None
     
-    def __init__(self, numero, torre: Torre):
+    def __init__(self, numero: int, torre: Torre):
         super().__init__(numero, torre)
         self.misChats={}                # {numero: objeto Chat}
         self.chatAbierto=False
@@ -356,7 +356,6 @@ class SMS(AplicacionComunicacion):
             self.chatAbierto = False
             print('Se cerro el chat')
         
-    
     def verChats(self):
         '''
         Muestra los chats.

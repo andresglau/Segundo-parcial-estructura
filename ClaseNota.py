@@ -7,10 +7,16 @@ class Nota:
         self.ultimaModificacion=datetime.datetime.now()
         
     def sobreescribirNota(self):
+        '''
+        Reescribe la nota desde 0
+        '''
         self.contenido=input("Escriba el contenido: ")
         self.ultimaModificacion=datetime.datetime.now()
         
     def agregarContenido(self):
+        '''
+        Agrega el contenido a la nota
+        '''
         self.contenido+=input('Agregue a su nota... ')
         self.ultimaModificacion=datetime.datetime.now()
         

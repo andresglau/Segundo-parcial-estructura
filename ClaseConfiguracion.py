@@ -20,6 +20,7 @@ class Configuracion(Aplicacion):
                          ('Cambiar codigo de desbloqueo', self.cambiarCodigo,[]),
                          ('Cambiar nombre del telefono', self.cambiarNombre, []),
                          ('Volver a pantalla de inicio', self.volver, [])]
+    
     def activar(self, nombre: str):
         '''
         Activa la funcionalidad que se le pasa como parametro.

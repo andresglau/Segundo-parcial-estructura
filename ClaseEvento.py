@@ -5,9 +5,15 @@ class Evento:
         self.fecha=fecha
         
     def cambiarFecha(self, fechaNueva):
+        '''
+        Cambia la fecha
+        '''
         self.fecha=fechaNueva
         
     def cambiarEvento(self, eventoNuevo):
+        '''
+        Cambia el nombre del evento
+        '''
         self.evento=eventoNuevo
         
     def __lt__(self, other):
