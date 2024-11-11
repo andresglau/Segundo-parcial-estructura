@@ -20,11 +20,16 @@ class Torre:
         
     def borrarTelefono(self, numero):
         '''
-        Saca un telefono de los registrados por la Torre
+        Saca un telefono de los registrados por la Torre.
+        Elimina todos los chats que tiene ese telefono
+        tanto de su telefono como del otro
         '''
         if numero not in self.telefonosRegistrados:
             raise ValueError('Telefono no registrado')
         else:
+            for chat in list(self.telefonosRegistrados[numero].aplicaciones['SMS'].misChats.values()):
+                self.telefonosRegistrados[chat.numeros[0]].aplicaciones['SMS'].misChats.pop(chat.numeros[1])
+                self.telefonosRegistrados[chat.numeros[1]].aplicaciones['SMS'].misChats.pop(chat.numeros[0])    
             self.telefonosRegistrados.pop(numero)
             
     def verificarEstado(self, aplicacionDeOrigen, numTelefono):

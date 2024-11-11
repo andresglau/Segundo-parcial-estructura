@@ -252,11 +252,8 @@ try:
         mostrarMenu(menuBase) #se ejecuta el menu
     except BaseException as e:
         print(f'Error no esperado. Error: {e}')
-        
-    torre.borrarTelefono(1198765432)
-    mostrarMenu(menuBase)
-
-    # sobreescribirCSV(archivo)
+    
+    sobreescribirCSV(archivo)
     
 except:
     print('Error grave. Comunicarse.')
