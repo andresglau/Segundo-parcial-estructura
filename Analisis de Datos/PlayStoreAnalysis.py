@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
 try:
-    with open('Analisis de Datos\Play Store Data.csv', 'r', encoding = 'utf-8') as file:
+    with open('Analisis de Datos/Play Store Data.csv', 'r', encoding = 'utf-8') as file:
         file.readline()
         lector = csv.reader(file)
         diccionarioCategorias = {}
