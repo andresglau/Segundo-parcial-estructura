@@ -17,7 +17,7 @@ try:
             '''
             if linea[4] == 'Varies with device':        #Registros de tamano que varian con dispositivo se omiten
                 pass
-            elif linea[5][-1] != '+':                   #Si las instalaciones no terminan en "+" las omitimos porque no respetan el formato estandar
+            elif linea[5][-1] != '+':                   #Si las instalaciones no terminan en "+" las omitimos porque no respetan el formato estandar, son 0 entonces no sirven para analizar
                 pass
             else:
                 rating = None
@@ -86,7 +86,7 @@ else:
     if opcion=='1':
         grafico_dispersion = plt.scatter(promedioDescargas, promedioRatings, c=cantidadApps, cmap = 'spring')
         plt.colorbar(grafico_dispersion, label = 'Cantidad de apps')
-        plt.gca().xaxis.set_major_formatter(ticker.ScalarFormatter(useOffset=False))
+        plt.gca().xaxis.set_major_formatter(ticker.ScalarFormatter(useOffset=False))    #Arregla la notacion cientifica del eje x a valores comunes
         plt.gca().xaxis.get_major_formatter().set_scientific(False)
         plt.title('Rating promedio vs descargas promedio por app de cada categoria', pad = 13, fontweight = 'light')
         plt.xlabel('Descargas promedio por app de la categoria', labelpad = 10, fontweight = 'bold')
@@ -130,23 +130,23 @@ else:
         plt.show()
 
     #GRAFICO 3 - PIE CHART
-    # porcentajeAppsMayores = np.array(list(map(lambda array: (array.sum()/array.shape[0])*100, diccionarioEdadesCategoria.values())))
     elif opcion=='3':
         for clave in diccionarioEdadesCategoria:
             diccionarioEdadesCategoria[clave] = (diccionarioEdadesCategoria[clave].sum()/diccionarioEdadesCategoria[clave].shape[0])*100
-
+        
         porcentajeAppsMayores = np.array(list(diccionarioEdadesCategoria.values()))
         condicion = porcentajeAppsMayores > np.median(porcentajeAppsMayores)      #Se toman las categorias con porcentajes mayores a la mediana
-        porcentajeAppsMayores = np.extract(condicion, porcentajeAppsMayores)
+        porcentajeAppsMayores = np.extract(condicion, porcentajeAppsMayores)      #Extraigo las categorias cuyos porcentajes son mayores a la mediana
 
         etiquetas = ['Apps mayores', 'Apps niños']
 
-        plt.subplots(4,4, figsize=(9,7))
+        plt.subplots(4,4, figsize=(9,7))        #Antes averigue cuantos valores estaban por encima de la mediana
         plt.suptitle('Porcentaje de apps segun edad del contenido', fontweight = 'light', fontsize = 20, ha = 'center')
-        for i in range(16):
+        for i in range(len(porcentajeAppsMayores)):
             plt.subplot(4,4,i+1)
             plt.pie([porcentajeAppsMayores[i], 100-porcentajeAppsMayores[i]], autopct='%1.1f%%', startangle=90)
             plt.title(list(diccionarioEdadesCategoria.keys())[list(diccionarioEdadesCategoria.values()).index(porcentajeAppsMayores[i])], size=10)
+            #Con ese plt.title le ponemos el titulo a cada categoria segun la posicion de ese nombre en la lista de categoria segun el valor del porcentaje
         plt.legend(bbox_to_anchor = (1,0.8), labels = etiquetas)
         plt.gcf().set_facecolor('lavenderblush')
         plt.tight_layout()
