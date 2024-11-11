@@ -185,7 +185,7 @@ def desbloquear(menuDesbloquear):
     while celularActivo.bloqueado and i<6:
         celularActivo.desbloquear()
         i+=1
-    if i==6:
+    if celularActivo.bloqueado:
         print('Agoto los 6 intentos de desbloqueo')
         mostrarMenu([('Instanciar',instanciar,[torre, menuOperar]),('Operar',operar,[menuOperar]),('Terminar',terminar,[])])
     else:
