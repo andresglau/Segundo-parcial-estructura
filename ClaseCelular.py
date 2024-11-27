@@ -4,7 +4,28 @@ from ClaseAppStore import AppStore
 from ClaseConfiguracion import Configuracion
 from ClaseEmail import Email
 
-class Celular:
+# class DispositivoElectronico:
+#     def __init__(self, nombre, modelo):
+#         self.nombre = nombre
+#         self.modelo = modelo
+#         self.version = version
+#         self.memoriaRAM = memoriaRAM
+#         self.almacenamiento = almacenamiento
+#     #Metodos de todos
+
+# class Tablet(DispositivoElectronico):
+#     pass
+
+# # class DispositivoCelular(DispositivoElectronico):
+# #     pass
+
+# class CelularViejo(DispositivoCelular):
+#     def __init__(self, nombre, modelo):
+#         super().__init__(nombre, modelo)
+        
+        
+
+class Celular():
     
     idUnicos=set()
     numerosUso = dict() #No se pueden repetir numeros celulares
@@ -152,3 +173,6 @@ class Celular:
     
     def __str__(self):
         return f'El celular de {self.nombre} modelo {self.modelo} tiene numero de celular {self.numero}'
+    
+    def __repr__(self):
+        return self.__str__()

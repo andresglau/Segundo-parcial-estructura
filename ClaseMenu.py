@@ -3,6 +3,7 @@ import Validaciones
 from ClaseTorre import Torre
 from ClaseEmail import Email
 from ClaseCelular import Celular
+import pickle
 
 #metodos comunes de menu
 def mostrarMenu(lista):
@@ -234,26 +235,59 @@ def eliminarApp():
 
 #Main
 try:
-    torre=Torre()
+    with open('celularNumerosUso.pkl', 'rb') as archivo:
+        Celular.numerosUso = pickle.load(archivo)
+
+    with open('celularIdUnicos.pkl', 'rb') as archivo:
+        Celular.idUnicos = pickle.load(archivo)
+        
+    with open('torre.pkl', 'rb') as archivo:
+        torre = pickle.load(archivo)
+    
+    #actualiza la torre dentro de cada celular ya que apunta hacia la de la ejecucion previa 
+    for celular in Celular.numerosUso.values():
+        celular.aplicaciones['Telefono'].torre = torre
+        celular.aplicaciones['SMS'].torre = torre
+        celular.aplicaciones['Configuracion'].torre = torre
+        
+    #actualiza los objetos del diccionario para que apunten a la misma direccion
+    torre.telefonosRegistrados=Celular.numerosUso
+        
+    # torre=Torre()
     menuDesbloquear = [('Apagar', apagar, []), ('Bloquear', bloquear, []), ('Abrir App', abrirApp, []), ('Eliminar App', eliminarApp, []), ('Salir', salir, [])]
     menuPrender=[('Desbloquear', desbloquear,[menuDesbloquear]), ('Apagar', apagar,[]), ('Salir', salir,[])]
     menuOperar=[('Prender', prender,[menuPrender]), ('Salir', salir,[])]
     menuBase=[('Instanciar',instanciar,[torre, menuOperar]),('Operar',operar,[menuOperar]),('Terminar',terminar,[])]
 
-    archivo = 'MemoriaCelulares.csv'
-    lectorCSV(archivo, torre) #trae a todos los telefonos instanciados previamente
+    # archivo = 'MemoriaCelulares.csv'
+    # lectorCSV(archivo, torre) #trae a todos los telefonos instanciados previamente
 
-    for celular in Celular.numerosUso.values(): #activa estos metodos a todos los celulares por practicidad
-        celular.apagado=False
-        celular.redMovil=True
-        celular.internet=True
+    # for celular in Celular.numerosUso.values(): #activa estos metodos a todos los celulares por practicidad
+    #     celular.apagado=False
+    #     celular.redMovil=True
+    #     celular.internet=True
+    
 
     try:
         mostrarMenu(menuBase) #se ejecuta el menu
     except BaseException as e:
         print(f'Error no esperado. Error: {e}')
     
-    sobreescribirCSV(archivo)
+    if isinstance(torre, Torre):
+        print(torre.telefonosRegistrados)
+        print(torre.registroDeLlamadas)
+        print(torre.registroDeMensajes)
+        print(torre.mensajesPendientes)
+        
+    # sobreescribirCSV(archivo)
+    with open('celularNumerosUso.pkl', 'wb') as archivo:
+        pickle.dump(Celular.numerosUso, archivo)
+        
+    with open('celularIdUnicos.pkl', 'wb') as archivo:
+        pickle.dump(Celular.idUnicos, archivo)
+        
+    with open('torre.pkl', 'wb') as archivo:
+        pickle.dump(torre, archivo)
     
 except:
     print('Error grave. Comunicarse.')
