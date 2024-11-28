@@ -1,11 +1,12 @@
 from ClaseTorre import Torre
 from ClaseAplicacion import Telefono, Contactos, SMS
 from ClaseAppStore import AppStore
-from ClaseConfiguracion import Configuracion
+from ClaseConfiguracion import *
 from ClaseEmail import Email
 
 class DispositivoElectronico:
-    def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int):
+    def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, **kwargs):
+        super().__init__(**kwargs)
         self.nombre = nombre
         self.modelo = modelo
         self.version = version
@@ -15,7 +16,7 @@ class DispositivoElectronico:
         self.bloqueado = True
         self.internet=False   #Un celular viejo va a poder acceder a Internet por la configuracion previa del programa donde para usar SMS se requiere Internet (unicamente con ese uso)
         self.modoAvion = False
-        self.aplicaciones = dict()
+        self.aplicaciones = {Configuracion.nombre: Configuracion()}
 
     def prender(self):
             '''
@@ -97,12 +98,12 @@ class DispositivoConRedMovil(DispositivoElectronico):
     
     numerosUso = dict() #No se pueden repetir numeros celulares
 
-    def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int, torre: Torre):
-        super().__init__(nombre, modelo, version, memoriaRAM, almacenamiento)
-        self.aplicaciones.update({Contactos.nombre:Contactos(self.numero,torre), Telefono.nombre:Telefono(self.numero,torre),
-                        SMS.nombre:SMS(self.numero, torre), Configuracion.nombre:Configuracion(self, torre)})
+    def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int, torre: Torre, **kwargs):
+        super().__init__(nombre, modelo, version, memoriaRAM, almacenamiento, **kwargs)
         self.numero = numero
         DispositivoConRedMovil.numerosUso[numero]=self
+        self.aplicaciones.update({Contactos.nombre:Contactos(self.numero,torre), Telefono.nombre:Telefono(self.numero,torre),
+                        SMS.nombre:SMS(self.numero, torre)})
         #La funcion de red movil es permitir realizar una llamada.
         self.redMovil=False
         '''
@@ -146,11 +147,12 @@ class DispositivoConRedMovil(DispositivoElectronico):
     def __repr__(self):
         return self.__str__()
 
-class DispositivoConInternet(DispositivoElectronico):
-    def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, codigo: int, mail: str):
-        super().__init__(nombre, modelo, version, memoriaRAM, almacenamiento)
-        self.aplicaciones.update({AppStore.nombre: AppStore(self),
-                           Configuracion.nombre:Configuracion(self, torre), Email.nombre:Email(mail)}) #SOLUCIONAR TEMA TORRE
+class DispositivoInteligente(DispositivoElectronico):
+    def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, codigo: int, mail: str, **kwargs):
+        super().__init__(nombre, modelo, version, memoriaRAM, almacenamiento, **kwargs)
+        self.aplicaciones.update({AppStore.nombre: AppStore(self), Email.nombre:Email(mail)})
+        #Diccionario de aplicaciones descargadas. Por defecto vienen estas a los dispositivos inteligentes
+
         self.bluetooth=False
         self.codigo=codigo
     
@@ -224,25 +226,18 @@ class DispositivoConInternet(DispositivoElectronico):
     def __repr__(self):
         return self.__str__()
 
-class Celular(DispositivoConInternet, DispositivoConRedMovil):
-    
+class Celular(DispositivoInteligente, DispositivoConRedMovil):
     idUnicos=set()
-    
-    def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int, codigo: int, mail: str, torre: Torre):
+    def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int, codigo: int, mail: str, torre: Torre, **kwargs):
         '''Se instancia el celular con sus respectivos atributos y modificaciones a los atributos de la clase Celular'''
-        super().__init__(nombre, modelo, version, memoriaRAM, almacenamiento, numero, torre)
-        super().__init__(codigo, mail)
+        super().__init__(nombre=nombre, modelo=modelo, version=version, memoriaRAM=memoriaRAM, almacenamiento=almacenamiento, codigo=codigo, mail=mail, numero=numero, torre=torre, **kwargs)
         if self.idUnicos:
             self.id=max(self.idUnicos)+1
         else:
             self.id=1000
         self.idUnicos.add(self.id)
-        # self.aplicaciones={Contactos.nombre:Contactos(self.numero,torre), Telefono.nombre:Telefono(self.numero,torre),
-        #                    SMS.nombre:SMS(self.numero, torre), AppStore.nombre: AppStore(self), 
-        #                    Configuracion.nombre:Configuracion(self, torre), Email.nombre:Email(mail)}
-        #Diccionario de aplicaciones descargadas. Por defecto vienen estas, y no se pueden borrar.
+        self.aplicaciones.update({ConfiguracionCelular.nombre:ConfiguracionCelular(self, torre)})
     
-
     def apagar(self):
         '''
         El celular cambia su estado de prendido.
@@ -267,31 +262,6 @@ class Celular(DispositivoConInternet, DispositivoConRedMovil):
             print('Se apago el celular')
         else:
             raise ValueError('El celular ya esta apagado')
-        
-    def desbloquear(self): #ver si lo puede heredar directo de dispositivo con internet
-        '''
-        Desbloquea el celular pero solo si ingreso la clave correcta.
-        Si fallo en la clave muestra un mensaje, pero si el telefono ya esta desbloqueado o apagado, levanta un error
-        '''
-        try:
-            codigo=int(input('Ingrese el codigo de desbloqueo: '))
-        except ValueError:
-            print('Debe ingresar un numero')
-        else:
-            try:
-                if not self.apagado:
-                    if self.bloqueado:
-                        if codigo==self.codigo:
-                            self.bloqueado = False
-                            print('Se desbloqueo el celular')
-                        else:
-                            print('Codigo incorrecto')
-                    else:
-                        raise ValueError('El telefono ya esta desbloqueado')
-                else:
-                    raise ValueError('El celular esta apagado')
-            except ValueError as e:
-                print(e)
     
     def __str__(self):
         return f'El celular de {self.nombre} modelo {self.modelo} tiene numero de celular {self.numero}'
@@ -300,9 +270,7 @@ class Celular(DispositivoConInternet, DispositivoConRedMovil):
         return self.__str__()
     
 class CelularAntiguo(DispositivoConRedMovil):
-    
     idUnicos=set()
-    
     def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int, torre: Torre):
         super().__init__(nombre, modelo, version, memoriaRAM, almacenamiento, numero, torre)
         if self.idUnicos:
@@ -310,11 +278,10 @@ class CelularAntiguo(DispositivoConRedMovil):
         else:
             self.id=1000
         self.idUnicos.add(self.id)
+        self.aplicaciones.update({ConfiguracionCelularViejo.nombre:ConfiguracionCelularViejo(self, torre)})
         
-class Tablet(DispositivoConInternet):
-    
+class Tablet(DispositivoInteligente):
     idUnicos=set()
-    
     def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, codigo: int, mail: str):
         super().__init__(nombre, modelo, version, memoriaRAM, almacenamiento, codigo, mail)
         if self.idUnicos:
@@ -322,6 +289,7 @@ class Tablet(DispositivoConInternet):
         else:
             self.id=1000
         self.idUnicos.add(self.id)
+        self.aplicaciones.update({ConfiguracionTablet.nombre:ConfiguracionTablet()})
     
     def __str__(self):
         return f'La tablet de {self.nombre} modelo {self.modelo}'
