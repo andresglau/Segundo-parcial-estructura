@@ -243,7 +243,12 @@ try:
         
     with open('torre.pkl', 'rb') as archivo:
         torre = pickle.load(archivo)
-    
+
+    # print(Celular.numerosUso[1167671659].aplicaciones['Telefono'].torre)
+    # print(Celular.numerosUso[1167671659].aplicaciones['SMS'].torre)
+    # print(Celular.numerosUso[1160276087].aplicaciones['Telefono'].torre)
+    # print(Celular.numerosUso[1160276087].aplicaciones['SMS'].torre)
+
     #actualiza la torre dentro de cada celular ya que apunta hacia la de la ejecucion previa 
     for celular in Celular.numerosUso.values():
         celular.aplicaciones['Telefono'].torre = torre
