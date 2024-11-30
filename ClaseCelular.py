@@ -5,8 +5,17 @@ from ClaseConfiguracion import *
 from ClaseEmail import Email
 
 class DispositivoElectronico:
+    idUnicos={}
     def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, **kwargs):
         super().__init__(**kwargs)
+        if self.idUnicos:
+            if max(self.idUnicos)==1109999999:
+                self.id=1200000000
+            else:
+                self.id=max(self.idUnicos)+1
+        else:
+            self.id=1000
+        self.idUnicos[self.id]=self
         self.nombre = nombre
         self.modelo = modelo
         self.version = version
@@ -16,18 +25,21 @@ class DispositivoElectronico:
         self.bloqueado = True
         self.internet=False   #Un celular viejo va a poder acceder a Internet por la configuracion previa del programa donde para usar SMS se requiere Internet (unicamente con ese uso)
         self.modoAvion = False
-        self.aplicaciones = {Configuracion.nombre: Configuracion()}
+        self.aplicaciones = {Configuracion.nombre: Configuracion(self)}
 
     def prender(self):
             '''
             El celular cambia su estado de apagado.
             Si esta prendido, no tiene logica prenderlo, por ende, levanta un error
             '''
-            if self.apagado:
-                self.apagado = False
-                print('Se prendio el celular')
-            else:    
-                raise ValueError('El celular ya esta prendido')
+            try:
+                if self.apagado:
+                    self.apagado = False
+                    print('Se prendio el celular')
+                else:    
+                    raise ValueError('El celular ya esta prendido')
+            except ValueError as e:
+                print(e)
     
     def apagar(self):
         '''
@@ -36,17 +48,20 @@ class DispositivoElectronico:
         el modo avion
         Si esta apagado, levanta un error
         '''
-        if not self.apagado:
-            if not self.bloqueado:
-                self.bloquear()
-            if self.internet:
-                self.internet = False
-            if self.modoAvion:
-                self.modoAvion = False
-            self.apagado = True
-            print('Se apago el celular')
-        else:
-            raise ValueError('El celular ya esta apagado')
+        try:
+            if not self.apagado:
+                if not self.bloqueado:
+                    self.bloquear()
+                if self.internet:
+                    self.internet = False
+                if self.modoAvion:
+                    self.modoAvion = False
+                self.apagado = True
+                print('Se apago el celular')
+            else:
+                raise ValueError('El celular ya esta apagado')
+        except ValueError as e:
+            print(e)
 
     def desbloquear(self):
         '''
@@ -69,14 +84,17 @@ class DispositivoElectronico:
         Bloquea el celular.
         Si el telefono ya esta bloqueado o apagado, levanta un error
         '''
-        if not self.apagado:
-            if not self.bloqueado:
-                self.bloqueado = True
-                print('Se bloqueo el celular')
+        try:
+            if not self.apagado:
+                if not self.bloqueado:
+                    self.bloqueado = True
+                    print('Se bloqueo el celular')
+                else:
+                    raise ValueError('El telefono ya esta bloqueado')
             else:
-                raise ValueError('El telefono ya esta bloqueado')
-        else:
-            raise ValueError('El celular esta apagado')
+                raise ValueError('El celular esta apagado')
+        except ValueError as e:
+            print(e)
     
     def verAplicaciones(self):
         '''
@@ -127,19 +145,22 @@ class DispositivoConRedMovil(DispositivoElectronico):
         desactiva la red movil, desactiva el internet y corta las llamadas en caso que haya
         Si esta apagado, levanta un error
         '''
-        if not self.apagado:
-            if not self.bloqueado:
-                self.bloquear()
-            if self.redMovil:
-                self.redMovil = False
-            if self.modoAvion:
-                self.modoAvion = False
-            if self.aplicaciones['Telefono'].enLlamada!=False:
-                self.aplicaciones['Telefono'].cortarLlamada()
-            self.apagado = True
-            print('Se apago el celular')
-        else:
-            raise ValueError('El celular ya esta apagado')
+        try:
+            if not self.apagado:
+                if not self.bloqueado:
+                    self.bloquear()
+                if self.redMovil:
+                    self.redMovil = False
+                if self.modoAvion:
+                    self.modoAvion = False
+                if self.aplicaciones['Telefono'].enLlamada!=False:
+                    self.aplicaciones['Telefono'].cortarLlamada()
+                self.apagado = True
+                print('Se apago el celular')
+            else:
+                raise ValueError('El celular ya esta apagado')
+        except ValueError as e:
+            print(e)
         
     def __str__(self):
         return f'El celular de {self.nombre} modelo {self.modelo} tiene numero de celular {self.numero}'
@@ -163,19 +184,22 @@ class DispositivoInteligente(DispositivoElectronico):
         desactiva el internet y desactiva el modo avion
         Si esta apagado, levanta un error
         '''
-        if not self.apagado:
-            if not self.bloqueado:
-                self.bloquear()
-            if self.internet:
-                self.internet = False
-            if self.bluetooth:
-                self.bluetooth = False
-            if self.modoAvion:
-                self.modoAvion = False
-            self.apagado = True
-            print('Se apago el celular')
-        else:
-            raise ValueError('El celular ya esta apagado')
+        try:
+            if not self.apagado:
+                if not self.bloqueado:
+                    self.bloquear()
+                if self.internet:
+                    self.internet = False
+                if self.bluetooth:
+                    self.bluetooth = False
+                if self.modoAvion:
+                    self.modoAvion = False
+                self.apagado = True
+                print('Se apago el celular')
+            else:
+                raise ValueError('El celular ya esta apagado')
+        except ValueError as e:
+            print(e)
     
     def desbloquear(self):
         '''
@@ -227,15 +251,9 @@ class DispositivoInteligente(DispositivoElectronico):
         return self.__str__()
 
 class Celular(DispositivoInteligente, DispositivoConRedMovil):
-    idUnicos=set()
     def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int, codigo: int, mail: str, torre: Torre, **kwargs):
         '''Se instancia el celular con sus respectivos atributos y modificaciones a los atributos de la clase Celular'''
         super().__init__(nombre=nombre, modelo=modelo, version=version, memoriaRAM=memoriaRAM, almacenamiento=almacenamiento, codigo=codigo, mail=mail, numero=numero, torre=torre, **kwargs)
-        if self.idUnicos:
-            self.id=max(self.idUnicos)+1
-        else:
-            self.id=1000
-        self.idUnicos.add(self.id)
         self.aplicaciones.update({ConfiguracionCelular.nombre:ConfiguracionCelular(self, torre)})
     
     def apagar(self):
@@ -270,26 +288,14 @@ class Celular(DispositivoInteligente, DispositivoConRedMovil):
         return self.__str__()
     
 class CelularAntiguo(DispositivoConRedMovil):
-    idUnicos=set()
     def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, numero: int, torre: Torre):
         super().__init__(nombre, modelo, version, memoriaRAM, almacenamiento, numero, torre)
-        if self.idUnicos:
-            self.id=max(self.idUnicos)+1
-        else:
-            self.id=1000
-        self.idUnicos.add(self.id)
         self.aplicaciones.update({ConfiguracionCelularViejo.nombre:ConfiguracionCelularViejo(self, torre)})
         
 class Tablet(DispositivoInteligente):
-    idUnicos=set()
     def __init__(self, nombre: str, modelo: str, version: str, memoriaRAM: int, almacenamiento: int, codigo: int, mail: str):
         super().__init__(nombre, modelo, version, memoriaRAM, almacenamiento, codigo, mail)
-        if self.idUnicos:
-            self.id=max(self.idUnicos)+1
-        else:
-            self.id=1000
-        self.idUnicos.add(self.id)
-        self.aplicaciones.update({ConfiguracionTablet.nombre:ConfiguracionTablet()})
+        self.aplicaciones.update({ConfiguracionTablet.nombre:ConfiguracionTablet(self)})
     
     def __str__(self):
         return f'La tablet de {self.nombre} modelo {self.modelo}'

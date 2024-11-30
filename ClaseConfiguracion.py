@@ -5,8 +5,9 @@ class Configuracion(Aplicacion):
     nombre='Configuracion'
     icono=None
     
-    def __init__(self):
+    def __init__(self, celular):
         super().__init__()
+        self.celular=celular #aunque no todos sean celulares, ya teniamos dentro de todos los metodos activar y desactivar definido el self.celular por eso el nombre de la variable
         self.opciones = [('Activar internet', self.activar, ['internet']),
                          ('Desactivar internet', self.desactivar,['internet']),
                          ('Activar modo avion', self.activar, ['modo avion']),
@@ -63,8 +64,7 @@ class Configuracion(Aplicacion):
 class ConfiguracionCelularViejo(Configuracion):
     
     def __init__(self, celular, torre: Torre):
-        super().__init__()
-        self.celular = celular
+        super().__init__(celular)        
         self.torre = torre
         self.opciones = [('Activar red movil', self.activar, ['red movil']),
                          ('Desactivar red movil',self.desactivar,['red movil']),
@@ -143,8 +143,8 @@ class ConfiguracionCelularViejo(Configuracion):
 
 class ConfiguracionTablet(Configuracion):
     
-    def __init__(self):
-        super().__init__()
+    def __init__(self, tablet):
+        super().__init__(tablet)
         self.opciones = [('Activar internet', self.activar, ['internet']),
                          ('Desactivar internet', self.desactivar,['internet']),
                          ('Activar Bluetooth', self.activar, ['bluetooth']),
