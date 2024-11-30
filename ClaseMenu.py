@@ -4,6 +4,8 @@ from ClaseTorre import Torre
 from ClaseEmail import Email
 from ClaseCelular import *
 import pickle
+import matplotlib.pyplot as plt
+import matplotlib.image as img
 
 #metodos comunes de menu
 def mostrarMenu(lista):
@@ -240,9 +242,16 @@ def abrirApp():
         if app in ('SMS', 'Email', 'App Store') and not dispositivoActivo.internet:
             print(f'No se puede acceder a {app} sin internet')
         else:
+            #Antes de mostrar las opciones de cada app, muestro el icono de la misma a traves de matplotlib
+            imagenApp = img.imread(dispositivoActivo.aplicaciones[app].icono)
+            plt.figure(figsize=(2,2))
+            plt.imshow(imagenApp)
+            plt.axis('off')
+            plt.show(block=False)
             volver = False
             while not volver:
                 volver = mostrarMenu(dispositivoActivo.aplicaciones[app].opciones)
+            plt.close()
     else:
         print('Esa aplicacion no se encuentra en el celular')
     mostrarMenu([('Apagar', apagar, []), ('Bloquear', bloquear, []), ('Abrir App', abrirApp, []), ('Eliminar App', eliminarApp, []), ('Salir', salir, [])])
@@ -309,7 +318,7 @@ try:
     # print(id(Celular.numerosUso[1167671659].aplicaciones['Telefono'].enLlamada))
     # print(id(Celular.numerosUso[1161577917].aplicaciones['Telefono'].enLlamada))
     
-    #chequeo de que una llamada tiene el mismo id en los 2 telefonos
+    #chequeo de que un mail tiene el mismo id en los 2 telefonos
     # print(id(Celular.numerosUso[1167671659].aplicaciones['Email'].bandejaEntrada[0]))
     # print(id(DispositivoElectronico.idUnicos[1001].aplicaciones['Email'].bandejaEnviados[0]))
     

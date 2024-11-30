@@ -3,7 +3,7 @@ from ClaseNota import Nota
 
 class Notas(Aplicacion):
     nombre='Notas'
-    icono=None
+    icono='FotosApps/FotoAppNotas.jpg'
     
     def __init__(self):
         super().__init__()

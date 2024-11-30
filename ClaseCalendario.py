@@ -4,7 +4,7 @@ import datetime
 
 class Calendario(Aplicacion):
     nombre = 'Calendario'
-    icono = None
+    icono = 'FotosApps/FotoAppCalendario.jpg'
     
     def __init__(self):
         super().__init__()

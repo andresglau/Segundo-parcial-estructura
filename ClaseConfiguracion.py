@@ -3,7 +3,7 @@ from ClaseTorre import Torre
 
 class Configuracion(Aplicacion):
     nombre='Configuracion'
-    icono=None
+    icono='FotosApps/FotoAppConfiguracion.jpg'
     
     def __init__(self, celular):
         super().__init__()
@@ -17,7 +17,7 @@ class Configuracion(Aplicacion):
     def activar(self, nombre: str):
         '''
         Activa la funcionalidad que se le pasa como parametro.
-        Antes que nada chequea que este prendido el celular
+        Antes que nada chequea que este prendido el dispositivo
         '''
         try:
             if not self.celular.apagado:
@@ -111,7 +111,28 @@ class ConfiguracionCelularViejo(Configuracion):
                 raise ValueError('El celular esta apagado')
         except ValueError as e:
             print(e)
-    
+
+    #ALTERNATIVA
+    '''
+    def activar(self, nombre: str):
+        try:
+            super().activar(nombre)
+            if not self.celular.apagado:
+                if nombre=='red movil':
+                    if not self.celular.redMovil:
+                        if not self.celular.modoAvion:
+                            self.celular.redMovil = True
+                            print('Se activo la red movil')
+                        else:
+                            print('No podes usar la red movil en modo avion')
+                    else:
+                        raise ValueError('La red movil ya esta activada')    
+            else:
+                raise ValueError('El celular esta apagado')
+        except ValueError as e:
+            print(e)
+    '''
+
     def desactivar(self, nombre: str):
         '''
         Desactiva la funcionalidad que se le pasa como parametro.

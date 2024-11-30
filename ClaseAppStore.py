@@ -5,7 +5,7 @@ from ClaseCalendario import Calendario
 
 class AppStore(Aplicacion):
     nombre = 'App Store'
-    icono = None
+    icono = 'FotosApps/FotoAppAppStore.jpg'
     aplicacionesDisponibles = {Notas.nombre: Notas, Calculadora.nombre:Calculadora, Calendario.nombre:Calendario}
     #Diccionario {clave nombreAplicacion : valor clase de la aplicacion}
     def __init__(self, celular):
@@ -17,7 +17,7 @@ class AppStore(Aplicacion):
     @classmethod
     def verAplicacionesDisponibles(cls):
         '''
-        Muestra las aplicaciones que se pueden descargar
+        Muestra las aplicaciones que se pueden descargar en el dispositivo
         '''
         print('Aplicaciones que se pueden descargar:')
         for aplicacion in cls.aplicacionesDisponibles:
@@ -25,14 +25,14 @@ class AppStore(Aplicacion):
 
     def descargarAplicacion(self):
         '''
-        Descarga una aplicacion al celular de las que estan disponibles en la tienda de aplicaciones
+        Descarga una aplicacion al dispositivo de las que estan disponibles en la tienda de aplicaciones
         '''
         nombre=input('Ingrese el nombre de la aplicacion que desea descargar: ')
         if nombre not in self.aplicacionesDisponibles:
             print(f'{nombre} no se encuentra en el App Store')      #No levanta error ya que es una situacion comun que se puede dar
         else:
             if nombre in self.celular.aplicaciones:
-                print(f'{nombre} ya esta descargada en el celular')
+                print(f'{nombre} ya esta descargada en el dispositivo')
             else:
                 self.celular.aplicaciones[nombre]=self.aplicacionesDisponibles[nombre]() #Creemos que no es necesario hacer un metodo en celular para esto
-                print(f'{nombre} se descargo en el celular')
+                print(f'{nombre} se descargo en el dispositivo')

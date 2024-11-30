@@ -47,7 +47,7 @@ class AplicacionComunicacion(Aplicacion):
 
 class Contactos(AplicacionComunicacion):
     nombre = 'Contactos'
-    icono = None
+    icono = 'FotosApps/FotoAppContactos.jpg'
     def __init__(self, numero, torre: Torre):
         super().__init__(numero, torre)
         self.opciones = [('Ver contactos',self.verListaContactos,[]),
@@ -136,7 +136,7 @@ class Contactos(AplicacionComunicacion):
 
 class Telefono(AplicacionComunicacion):
     nombre='Telefono'
-    icono=None
+    icono='FotosApps/FotoAppTelefono.jpg'
     
     def __init__(self,numero, torre: Torre):
         super().__init__(numero, torre)
@@ -264,7 +264,7 @@ class Telefono(AplicacionComunicacion):
         
 class SMS(AplicacionComunicacion):
     nombre='SMS'
-    icono=None
+    icono='FotosApps/FotoAppSMS.jpg'
     
     def __init__(self, numero: int, torre: Torre):
         super().__init__(numero, torre)

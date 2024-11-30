@@ -16,7 +16,7 @@ class Mail():
 
 class Email(Aplicacion):
     nombre = 'Email'
-    icono = None
+    icono = 'FotosApps/FotoAppEmail.jpg'
     emailsRegistrados = {}                      #{Email como str : aplicacion Email}
     
     def __init__(self, miMail: str):

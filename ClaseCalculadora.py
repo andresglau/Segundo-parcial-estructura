@@ -2,7 +2,7 @@ from ClaseAplicacion import Aplicacion
 
 class Calculadora(Aplicacion):
     nombre='Calculadora'
-    icono=None
+    icono='FotosApps\FotoAppCalculadora.jpg'
     
     def __init__(self):
         super().__init__()
