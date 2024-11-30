@@ -159,7 +159,7 @@ def operar(menuOperar):
                 elif type(DispositivoElectronico.idUnicos[id])==Tablet:
                     print(f'Tablet con id {id} mail: {DispositivoElectronico.idUnicos[id].get_mail()}')
             opcion=int(input('Ingrese un numero de telefono o el ID de la tablet. Ingrese 1 para volver atras: '))
-            if opcion==1 or opcion in DispositivoConRedMovil.numerosUso or (opcion in DispositivoElectronico.idUnicos and type(DispositivoElectronico.idUnicos[id])==Tablet):
+            if opcion==1 or opcion in DispositivoConRedMovil.numerosUso or (opcion in DispositivoElectronico.idUnicos and type(DispositivoElectronico.idUnicos[opcion])==Tablet):
                 existe=opcion
             else:
                 print('No hay ningun dispositivo con esa caracteristica') #Consideramos incorrecto ingresar un idUnico valido de un celular cuando a los celulares se deben ingresar por numero telefonico
@@ -264,46 +264,71 @@ def eliminarApp():
 
 #Main
 try:
-    # with open('celularNumerosUso.pkl', 'rb') as archivo:
-    #     Celular.numerosUso = pickle.load(archivo)
-
-    # with open('celularIdUnicos.pkl', 'rb') as archivo:
-    #     Celular.idUnicos = pickle.load(archivo)
+    with open('idDispositivos.pkl', 'rb') as archivo:
+        DispositivoElectronico.idUnicos = pickle.load(archivo)
         
-    # with open('torre.pkl', 'rb') as archivo:
-    #     torre = pickle.load(archivo)
-
-    # print(Celular.numerosUso[1167671659].aplicaciones['Telefono'].torre)
-    # print(Celular.numerosUso[1167671659].aplicaciones['SMS'].torre)
-    # print(Celular.numerosUso[1160276087].aplicaciones['Telefono'].torre)
-    # print(Celular.numerosUso[1160276087].aplicaciones['SMS'].torre)
-
-    #actualiza la torre dentro de cada celular ya que apunta hacia la de la ejecucion previa 
-    # for celular in Celular.numerosUso.values():
-    #     celular.aplicaciones['Telefono'].torre = torre
-    #     celular.aplicaciones['SMS'].torre = torre
-    #     celular.aplicaciones['Configuracion'].torre = torre
+    with open('torre.pkl', 'rb') as archivo:
+        torre: Torre = pickle.load(archivo)
         
-    #actualiza los objetos del diccionario para que apunten a la misma direccion
-    # torre.telefonosRegistrados=Celular.numerosUso
-        
-    torre=Torre()
-    Celular('a',1,1,1,1,1167671659,1234,'@.com',torre)
-    CelularAntiguo('a',1,1,1,1,1167671658,torre)
-    Tablet('a',1,1,1,1,1234,'a@.com')
+    #actualiza los objetos del diccionario para que apunten a la misma direccion y llena los atributos de clase que se iban agregando con la instanciacion
+    for dispositivo in DispositivoElectronico.idUnicos.values():
+        if isinstance(dispositivo,DispositivoConRedMovil):
+            DispositivoConRedMovil.numerosUso[dispositivo.numero]=dispositivo
+            if dispositivo.numero in torre.telefonosRegistrados:
+                torre.telefonosRegistrados[dispositivo.numero]=dispositivo
+        if isinstance(dispositivo,DispositivoInteligente):
+            Email.emailsRegistrados[dispositivo.aplicaciones['Email'].miMail]=dispositivo.aplicaciones['Email']
+                
+    # actualiza la torre dentro de cada celular ya que apunta hacia la de la ejecucion previa 
+    for celular in DispositivoConRedMovil.numerosUso.values():
+        celular.aplicaciones['Telefono'].torre = torre
+        celular.aplicaciones['SMS'].torre = torre
+        celular.aplicaciones['Configuracion'].torre = torre
     
+    #chequear de que un objeto tiene mismo id en todos los diccionarios
+    # print(id(DispositivoElectronico.idUnicos[1000]))
+    # print(id(DispositivoConRedMovil.numerosUso[1161577917]))
+    # print(id(torre.telefonosRegistrados[1161577917]))
+    # print()
+    # print(id(DispositivoElectronico.idUnicos[1002]))
+    # print(id(DispositivoConRedMovil.numerosUso[1167671659]))
+    # print(id(torre.telefonosRegistrados[1167671659]))
+    
+    # chequeo de que la torre es la misma para todos    
+    # print(id(Celular.numerosUso[1167671659].aplicaciones['Telefono'].torre))
+    # print(id(Celular.numerosUso[1167671659].aplicaciones['SMS'].torre))
+    # print(id(Celular.numerosUso[1161577917].aplicaciones['Telefono'].torre))
+    # print(id(Celular.numerosUso[1161577917].aplicaciones['SMS'].torre))
+    # print(id(torre))
+    
+    #chequeo de que un chat tiene el mismo id en los 2 telefonos
+    # print(id(Celular.numerosUso[1167671659].aplicaciones['SMS'].misChats[1161577917]))
+    # print(id(Celular.numerosUso[1161577917].aplicaciones['SMS'].misChats[1167671659]))
+    
+    #chequeo de que una llamada tiene el mismo id en los 2 telefonos
+    # print(id(Celular.numerosUso[1167671659].aplicaciones['Telefono'].enLlamada))
+    # print(id(Celular.numerosUso[1161577917].aplicaciones['Telefono'].enLlamada))
+    
+    #chequeo de que una llamada tiene el mismo id en los 2 telefonos
+    # print(id(Celular.numerosUso[1167671659].aplicaciones['Email'].bandejaEntrada[0]))
+    # print(id(DispositivoElectronico.idUnicos[1001].aplicaciones['Email'].bandejaEnviados[0]))
+    
+    # instanciacion de forma antigua:    
+    # torre=Torre()
+    # CelularAntiguo('karina','nokia pluma','version 1',4,4,1161577917,torre)
+    # Tablet('tomas','iPad5','version 1',8,256,1234,'tomas@gmail.com')
+    # archivo = 'MemoriaCelulares.csv'
+    # lectorCSV(archivo, torre) #trae a todos los telefonos instanciados previamente
+    # for dispositivo in DispositivoElectronico.idUnicos.values(): #activa estos metodos a todos los celulares por practicidad
+    #     dispositivo.apagado=False
+    #     dispositivo.internet=True
+    #     if isinstance(dispositivo,DispositivoConRedMovil):
+    #         dispositivo.redMovil=True
     
     menuDesbloquear = [('Apagar', apagar, []), ('Bloquear', bloquear, []), ('Abrir App', abrirApp, []), ('Eliminar App', eliminarApp, []), ('Salir', salir, [])]
     menuPrender=[('Desbloquear', desbloquear,[menuDesbloquear]), ('Apagar', apagar,[]), ('Salir', salir,[])]
     menuOperar=[('Prender', prender,[menuPrender]), ('Salir', salir,[])]
     menuBase=[('Instanciar',instanciar,[torre, menuOperar]),('Operar',operar,[menuOperar]),('Terminar',terminar,[])]
-    # archivo = 'MemoriaCelulares.csv'
-    # lectorCSV(archivo, torre) #trae a todos los telefonos instanciados previamente
-
-    # for celular in Celular.numerosUso.values(): #activa estos metodos a todos los celulares por practicidad
-    #     celular.apagado=False
-    #     celular.redMovil=True
-    #     celular.internet=True
     
     try:
         mostrarMenu(menuBase) #se ejecuta el menu
@@ -317,14 +342,11 @@ try:
         print(torre.mensajesPendientes)
         
     # sobreescribirCSV(archivo)
-    # with open('celularNumerosUso.pkl', 'wb') as archivo:
-    #     pickle.dump(Celular.numerosUso, archivo)
+    with open('idDispositivos.pkl', 'wb') as archivo:
+        pickle.dump(DispositivoElectronico.idUnicos, archivo)
         
-    # with open('celularIdUnicos.pkl', 'wb') as archivo:
-    #     pickle.dump(Celular.idUnicos, archivo)
-        
-    # with open('torre.pkl', 'wb') as archivo:
-    #     pickle.dump(torre, archivo)
+    with open('torre.pkl', 'wb') as archivo:
+        pickle.dump(torre, archivo)
     
 except ValueError:
     print('Error grave. Comunicarse.')
