@@ -150,8 +150,6 @@ class ConfiguracionTablet(Configuracion):
         '''
         Activa la funcionalidad que se le pasa como parametro.
         Antes que nada chequea que este prendido el celular
-        Para poder activar Red Movil, Modo Avion debe estar desactivado. Si se activa Modo Avion, se desactiva la Red Movil
-        Cuando se activa el Internet, se entregan los mensajes que estaba reteniendo la Torre Central
         '''
         try:
             if not self.celular.apagado:

@@ -343,12 +343,13 @@ try:
         mostrarMenu(menuBase) #se ejecuta el menu
     except BaseException as e:
         print(f'Error no esperado. Error: {e}')
-    
-    if isinstance(torre, Torre):
-        print(torre.telefonosRegistrados)
-        print(torre.registroDeLlamadas)
-        print(torre.registroDeMensajes)
-        print(torre.mensajesPendientes)
+
+    #chequeo que la torre tenga todo antes de guardar el objeto torre
+    # if isinstance(torre, Torre):
+    #     print(torre.telefonosRegistrados)
+    #     print(torre.registroDeLlamadas)
+    #     print(torre.registroDeMensajes)
+    #     print(torre.mensajesPendientes)
     
     #escritura del archivo previo a usar pickle:    
     # sobreescribirCSV(archivo)

@@ -248,7 +248,7 @@ class Celular(DispositivoInteligente, DispositivoConRedMovil):
         '''
         El celular cambia su estado de prendido.
         Cuando se apaga el celular, en caso de tener alguna de estas funcionalidades activadas, se bloquea,
-        desactiva el internet y desactiva la red movil
+        desactiva el internet, desactiva el modo avion, desactiva la red movil y corta las llamadas en caso de que haya
         Si esta apagado, levanta un error
         '''
         try:
