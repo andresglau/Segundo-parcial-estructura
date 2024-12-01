@@ -51,7 +51,7 @@ class DispositivoElectronico:
         try:
             if not self.apagado:
                 if not self.bloqueado:
-                    self.bloquear()
+                    self.bloqueado = True
                 if self.internet:
                     self.internet = False
                 if self.modoAvion:
@@ -147,16 +147,11 @@ class DispositivoConRedMovil(DispositivoElectronico):
         '''
         try:
             if not self.apagado:
-                if not self.bloqueado:
-                    self.bloquear()
                 if self.redMovil:
                     self.redMovil = False
-                if self.modoAvion:
-                    self.modoAvion = False
                 if self.aplicaciones['Telefono'].enLlamada!=False:
                     self.aplicaciones['Telefono'].cortarLlamada()
-                self.apagado = True
-                print('Se apago el celular')
+                super().apagar()
             else:
                 raise ValueError('El celular ya esta apagado')
         except ValueError as e:
@@ -186,16 +181,9 @@ class DispositivoInteligente(DispositivoElectronico):
         '''
         try:
             if not self.apagado:
-                if not self.bloqueado:
-                    self.bloquear()
-                if self.internet:
-                    self.internet = False
                 if self.bluetooth:
                     self.bluetooth = False
-                if self.modoAvion:
-                    self.modoAvion = False
-                self.apagado = True
-                print('Se apago el celular')
+                super().apagar()
             else:
                 raise ValueError('El celular ya esta apagado')
         except ValueError as e:
@@ -263,23 +251,13 @@ class Celular(DispositivoInteligente, DispositivoConRedMovil):
         desactiva el internet y desactiva la red movil
         Si esta apagado, levanta un error
         '''
-        if not self.apagado:
-            if not self.bloqueado:
-                self.bloquear()
-            if self.internet:
-                self.internet = False
-            if self.redMovil:
-                self.redMovil = False
-            if self.bluetooth:
-                self.bluetooth = False
-            if self.modoAvion:
-                self.modoAvion = False
-            if self.aplicaciones['Telefono'].enLlamada!=False:
-                self.aplicaciones['Telefono'].cortarLlamada()
-            self.apagado = True
-            print('Se apago el celular')
-        else:
-            raise ValueError('El celular ya esta apagado')
+        try:
+            if not self.apagado:
+                super().apagar()
+            else:
+                raise ValueError('El celular ya esta apagado')
+        except ValueError as e:
+            print(e)
     
     def __str__(self):
         return f'El celular de {self.nombre} modelo {self.modelo} tiene numero de celular {self.numero}'

@@ -322,7 +322,7 @@ try:
     # print(id(Celular.numerosUso[1167671659].aplicaciones['Email'].bandejaEntrada[0]))
     # print(id(DispositivoElectronico.idUnicos[1001].aplicaciones['Email'].bandejaEnviados[0]))
     
-    # instanciacion de forma antigua:    
+    # instanciacion previa a usar pickle:    
     # torre=Torre()
     # CelularAntiguo('karina','nokia pluma','version 1',4,4,1161577917,torre)
     # Tablet('tomas','iPad5','version 1',8,256,1234,'tomas@gmail.com')
@@ -349,8 +349,10 @@ try:
         print(torre.registroDeLlamadas)
         print(torre.registroDeMensajes)
         print(torre.mensajesPendientes)
-        
+    
+    #escritura del archivo previo a usar pickle:    
     # sobreescribirCSV(archivo)
+    
     with open('idDispositivos.pkl', 'wb') as archivo:
         pickle.dump(DispositivoElectronico.idUnicos, archivo)
         

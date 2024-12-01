@@ -80,6 +80,7 @@ class ConfiguracionCelularViejo(Configuracion):
         Antes que nada chequea que este prendido el celular
         Para poder activar Red Movil, Modo Avion debe estar desactivado. Si se activa Modo Avion, se desactiva la Red Movil
         Cuando se activa el Internet, se entregan los mensajes que estaba reteniendo la Torre Central
+        Aca no se usa super ya que se redefinen como se activa el internet y el modo avion
         '''
         try:
             if not self.celular.apagado:
@@ -104,34 +105,13 @@ class ConfiguracionCelularViejo(Configuracion):
                     if not self.celular.modoAvion:
                         self.celular.modoAvion = True
                         print('Se activo el modo avion')
-                        self.desactivar('red movil')
+                        self.celular.redMovil = False
                     else:
-                        raise ValueError('El modo avion ya esta activado')    
+                        raise ValueError('El modo avion ya esta activado')
             else:
                 raise ValueError('El celular esta apagado')
         except ValueError as e:
             print(e)
-
-    #ALTERNATIVA
-    '''
-    def activar(self, nombre: str):
-        try:
-            super().activar(nombre)
-            if not self.celular.apagado:
-                if nombre=='red movil':
-                    if not self.celular.redMovil:
-                        if not self.celular.modoAvion:
-                            self.celular.redMovil = True
-                            print('Se activo la red movil')
-                        else:
-                            print('No podes usar la red movil en modo avion')
-                    else:
-                        raise ValueError('La red movil ya esta activada')    
-            else:
-                raise ValueError('El celular esta apagado')
-        except ValueError as e:
-            print(e)
-    '''
 
     def desactivar(self, nombre: str):
         '''
@@ -145,18 +125,8 @@ class ConfiguracionCelularViejo(Configuracion):
                         print('Se desactivo la red movil')
                     else:
                         raise ValueError('La red movil ya esta desactivada')
-                elif nombre == 'internet':
-                    if self.celular.internet:
-                        self.celular.internet = False
-                        print('Se desactivo el internet')
-                    else:
-                        raise ValueError('El internet ya esta desactivado')
-                elif nombre == 'modo avion':
-                    if self.celular.modoAvion:
-                        self.celular.modoAvion = False
-                        print('Se desactivo el modo avion')
-                    else:
-                        raise ValueError('El modo avion ya esta desactivado')
+                else:
+                    super().desactivar(nombre)
             else:
                 raise ValueError('El celular esta apagado')
         except ValueError as e:
@@ -185,24 +155,14 @@ class ConfiguracionTablet(Configuracion):
         '''
         try:
             if not self.celular.apagado:
-                if nombre=='internet':
-                    if not self.celular.internet:
-                        self.celular.internet = True
-                        print('Se activo el internet')
-                    else:
-                        raise ValueError('La internet ya esta activado')
-                elif nombre=='bluetooth':
+                if nombre=='bluetooth':
                     if not self.celular.bluetooth:
                         self.celular.bluetooth = True
                         print('Se activo el bluetooth')
                     else:
                         raise ValueError('El bluetooth ya esta activada')
-                elif nombre=='modo avion':
-                    if not self.celular.modoAvion:
-                        self.celular.modoAvion = True
-                        print('Se activo el modo avion')
-                    else:
-                        raise ValueError('El modo avion ya esta activado')    
+                else:
+                    super().activar(nombre)
             else:
                 raise ValueError('El celular esta apagado')
         except ValueError as e:
@@ -214,24 +174,14 @@ class ConfiguracionTablet(Configuracion):
         '''
         try:
             if not self.celular.apagado:
-                if nombre == 'internet':
-                    if self.celular.internet:
-                        self.celular.internet = False
-                        print('Se desactivo el internet')
-                    else:
-                        raise ValueError('El internet ya esta desactivado')
-                elif nombre == 'bluetooth':
+                if nombre == 'bluetooth':
                     if self.celular.bluetooth:
                         self.celular.bluetooth = False
                         print('Se desactivo el bluetooth')
                     else:
                         raise ValueError('El bluetooth ya esta desactivado')
-                elif nombre == 'modo avion':
-                    if self.celular.modoAvion:
-                        self.celular.modoAvion = False
-                        print('Se desactivo el modo avion')
-                    else:
-                        raise ValueError('El modo avion ya esta desactivado')
+                else:
+                    super().desactivar(nombre)
             else:
                 raise ValueError('El celular esta apagado')
         except ValueError as e:
@@ -290,36 +240,14 @@ class ConfiguracionCelular(ConfiguracionCelularViejo, ConfiguracionTablet):
         '''
         try:
             if not self.celular.apagado:
-                if nombre=='red movil':
-                    if not self.celular.redMovil:
-                        if not self.celular.modoAvion:
-                            self.celular.redMovil = True
-                            print('Se activo la red movil')
-                        else:
-                            print('No podes usar la red movil en modo avion')
-                    else:
-                        raise ValueError('La red movil ya esta activada')
-                elif nombre=='internet':
-                    if not self.celular.internet:
-                        self.celular.internet = True
-                        print('Se activo el internet')
-                        if self.celular.numero in self.torre.telefonosRegistrados: #solo para los celulares que estan registrados en la torre
-                            self.torre.entregarMensajes(self.celular.numero) #recibe los SMS que le enviaron cuando no tenia internet
-                    else:
-                        raise ValueError('La internet ya esta activado')
-                elif nombre=='bluetooth':
+                if nombre=='bluetooth':
                     if not self.celular.bluetooth:
                         self.celular.bluetooth = True
                         print('Se activo el bluetooth')
                     else:
                         raise ValueError('El bluetooth ya esta activada')
-                elif nombre=='modo avion':
-                    if not self.celular.modoAvion:
-                        self.celular.modoAvion = True
-                        print('Se activo el modo avion')
-                        self.desactivar('red movil')
-                    else:
-                        raise ValueError('El modo avion ya esta activado')    
+                else:
+                    super().activar(nombre)
             else:
                 raise ValueError('El celular esta apagado')
         except ValueError as e:
@@ -331,30 +259,7 @@ class ConfiguracionCelular(ConfiguracionCelularViejo, ConfiguracionTablet):
         '''
         try:
             if not self.celular.apagado:
-                if nombre == 'red movil':
-                    if self.celular.redMovil:
-                        self.celular.redMovil = False
-                        print('Se desactivo la red movil')
-                    else:
-                        raise ValueError('La red movil ya esta desactivada')
-                elif nombre == 'internet':
-                    if self.celular.internet:
-                        self.celular.internet = False
-                        print('Se desactivo el internet')
-                    else:
-                        raise ValueError('El internet ya esta desactivado')
-                elif nombre == 'bluetooth':
-                    if self.celular.bluetooth:
-                        self.celular.bluetooth = False
-                        print('Se desactivo el bluetooth')
-                    else:
-                        raise ValueError('El bluetooth ya esta desactivado')
-                elif nombre == 'modo avion':
-                    if self.celular.modoAvion:
-                        self.celular.modoAvion = False
-                        print('Se desactivo el modo avion')
-                    else:
-                        raise ValueError('El modo avion ya esta desactivado')
+                super().desactivar(nombre)
             else:
                 raise ValueError('El celular esta apagado')
         except ValueError as e:
